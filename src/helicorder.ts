@@ -4,6 +4,12 @@ import * as sp from 'seisplotjs';
 import {DateTime} from 'luxon';
 
 import {retrieveStationXML} from './datastore';
+import {addGraticule, stateBoundaries} from './maplayers';
+const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
+const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+
+const BASE_TILE = WORLD_OCEAN;
+const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 createNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -12,9 +18,12 @@ if (true) {
 app.innerHTML = `
 <h5>Click a station (triangle) to see last 24 hours of data.</h5>
 <sp-station-quake-map
-      centerLat="34"
-      centerLon="-80"
-      zoomLevel="9">
+      centerLat="33.5"
+      centerLon="-81"
+      zoomLevel="7"
+      tileUrl='${BASE_TILE}'
+      tileAttribution='${BASE_TILE_ATTR}'
+      >
 </sp-station-quake-map>
 <h5>Mouse Time: <span id="mousetime"></span></h5>
 <sp-helicorder></sp-helicorder>
@@ -44,7 +53,12 @@ heli.addEventListener("mouseleave", () => {
 });
 
 const map = document.querySelector("sp-station-quake-map");
+map.onRedraw = () => {
+  addGraticule(map);
+}
 retrieveStationXML().then(staxml => {
+  return Promise.all([staxml, stateBoundaries(map)]);
+}).then(([staxml, statelines]) => {
   staxml.forEach(net=> {
     map.addStation(net.stations);
   });
@@ -92,8 +106,9 @@ retrieveStationXML().then(staxml => {
       heli.seisData = sddList;
 
     });
+    return Promise.all([staxml, statelines]);
   });
-  map.draw();
+  map.redraw();
 });
 
 setInterval( () => {

@@ -3,49 +3,67 @@ import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 
 import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
+import * as L from 'leaflet';
+import "leaflet-polar-graticule";
 
 import {createNavigation} from './navbar';
+import {retrieveStationXML, retrieveQuakeML} from './datastore';
+import {
+  addGraticule,
+  historicEarthquakes, stateBoundaries, tectonicSummary
+} from './maplayers';
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 
 createNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
+const NAT_GEO = "http://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}"
+const NAT_GEO_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+const WORLD_TOPO = "http://www.seis.sc.edu/tilecache/USGSTopo/{z}/{y}/{x}"
+const WORLD_TOPO_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
+const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+
+const BASE_TILE = WORLD_OCEAN;
+const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 if (true) {
 app.innerHTML = `
   <h3>Recent Earthquakes near South Carolina</h3>
   <sp-station-quake-map
-    tileUrl="http://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}"
-    tileAttribution='Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+    tileUrl='${BASE_TILE}'
+    tileAttribution='${BASE_TILE_ATTR}'
     zoomLevel="7"
     centerLat="33.5" centerLon="-81"
     fitbounds="false">
   </sp-station-quake-map>
+  <dialog>
+    <div>
+    </div>
+    <button autofocus>Close</button>
+  </dialog>
 `
 }
 
+const dialog = document.querySelector("dialog");
+const closeDialogButton = document.querySelector("dialog button");
+closeDialogButton.addEventListener("click", () => {
+  dialog.close();
+});
 
-const SC_QUAKE_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
-const SC_STATION_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/CO_channels.staml"
-const TECTONIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/tectonic.geojson"
+
+const quakeMap = document.querySelector("sp-station-quake-map");
 
 let allQuakes = [];
-export type PageState = {
-  quakeList: Array<sp.quakeml.Quake>,
-  channelList: Array<sp.stationxml.Channel>,
-  dataset: sp.dataset.Dataset,
-};
 
-let pageState: PageState = {
-  quakeList: [],
-  channelList: [],
-  dataset: new sp.dataset.Dataset(),
-}
 
 function displayForTime(timeRange: Interval, quakes: Array<Quake>): Array<Quake> {
   const quakesInTime = allQuakes.filter(q => {
     return timeRange.start <= q.time && q.time <= timeRange.end;
+  });
+  const oldQuakes = allQuakes.filter(q => {
+    return q.time < timeRange.start;
   });
 
   let quakeMap = document.querySelector("sp-station-quake-map");
@@ -63,56 +81,27 @@ function displayForTime(timeRange: Interval, quakes: Array<Quake>): Array<Quake>
   let quakeTable = new sp.infotable.QuakeTable([], colLabels);
   quakeTable.timeZone = EASTERN_TIMEZONE;
 
-  quakeMap.setAttribute(sp.leafletutil.TILE_TEMPLATE,
-    'https://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}/'
-  );
-  quakeMap.setAttribute(sp.leafletutil.TILE_ATTRIBUTION,
-    'Tiles &copy; Esri, Garmin, GEBCO, NOAA NGDC, and other contributors'
-  );
-  quakeMap.zoomLevel = 7;
-  if (pageState.channelList.length > 0) {
-    quakeMap.centerLat = pageState.channelList[0].latitude;
-    quakeMap.centerLon = pageState.channelList[0].longitude;
-  } else {
-    quakeMap.centerLat = 34.0;
-    quakeMap.centerLon = -81.0;
-  }
-
-
   quakeTable.quakeList = quakesInTime;
   app.appendChild(quakeTable);
   quakeTable.draw();
   quakeMap.quakeList = []
   quakeMap.addQuake(quakesInTime);
-  quakeMap.draw();
+  quakeMap.onRedraw = (eqMap) => {
+    addGraticule(eqMap);
+  };
+  quakeMap.redraw();
 }
 
+const oldQuakeTimeDuration = Duration.fromISO('P1Y');
+const timeRange = Interval.before(DateTime.utc(), oldQuakeTimeDuration);
 
-const quakeQuery = sp.quakeml.fetchQuakeML(SC_QUAKE_URL);
-const chanQuery = sp.stationxml.fetchStationXml(SC_STATION_URL).then(staxml => {
-  // filter so only HH? and HN?
-  staxml.forEach(net=> {
-    net.stations = net.stations.filter(sta => !sta.endDate); // active, so no endDate
-    net.stations.forEach(sta => {
-      sta.channels = sta.channels.filter(ch => ch.channelCode.startsWith("H") && (
-          ch.channelCode.charAt(1) === 'H' || ch.channelCode.charAt(1) === 'N') &&
-          ch.channelCode.charAt(2) === 'Z');
-    });
-    //net.stations = net.stations.filter(sta => sta.stationCode === "JSC" || sta.stationCode === "PARR");
-    net.stations = net.stations.filter(sta => sta.channels.length > 0);
-  });
-  staxml = staxml.filter(net => net.stations.length > 0);
-  return staxml;
-});
+const quakeQuery = retrieveQuakeML();
+const chanQuery = retrieveStationXML();
 Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   console.log(`qml len: ${qml.eventList.length}`)
-  pageState.quakeList = qml.eventList;
-  pageState.dataset.inventory = staxml;
-  pageState.channelList = Array.from(sp.stationxml.allChannels(staxml));
 
   allQuakes = qml.eventList;
   //const trEl = document.querySelector("sp-timerange");
-  const timeRange = Interval.before(DateTime.utc(), Duration.fromISO('P1Y'));
   displayForTime(timeRange, allQuakes);
 
   let table = document.querySelector("sp-quake-table");
@@ -121,26 +110,17 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   staxml.forEach(net=> {
     map.addStation(net.stations);
   });
-  map.draw();
+  map.redraw();
   return [qml, staxml];
 }).then( ([qml, staxml]) => {
-  function tooltipper(feature, layer) {
-    console.log("tooltip")
-    layer.bindTooltip( (f => feature.properties.name));
-    layer.addEventListener("click", (evt) => {
-      console.log(`click ${feature.properties.name}`);
-    });
-  };
-  const tectonicLayer =
-    sp.usgsgeojson.loadUSGSTectonicLayer(TECTONIC_URL).then(tecGeoJson => {
+
+  const historicalLayer = historicEarthquakes(quakeMap, timeRange);
+  const tectonicLayer = tectonicSummary(quakeMap);
+  const stateBoundLayer = stateBoundaries(quakeMap);
+  return Promise.all([qml, staxml, stateBoundLayer, tectonicLayer, historicalLayer])
+    .then( () => {
       const map = document.querySelector("sp-station-quake-map");
-      map.addGeoJsonLayer("Tectonic Regions",
-                          tecGeoJson.tectonic,
-                          {
-                            onEachFeature: tooltipper
-                          });
-      map.draw();
-      return tecGeoJson;
+      map.redraw();
+      console.log("Promise  for map done")
     });
-  return Promise.all([qml, staxml, tectonicLayer])
 });
