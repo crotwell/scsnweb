@@ -17,6 +17,7 @@ let navhtml = `
     <li><a href="${import.meta.env.BASE_URL}index.html">Earthquakes</a></li>
     <li><a href="${import.meta.env.BASE_URL}helicorder/index.html">Today's Seismograms</a></li>
     <li><a href="${import.meta.env.BASE_URL}historical/index.html">Historical Earthquakes</a></li>
+    <li><a href="${import.meta.env.BASE_URL}global/index.html">Global Earthquakes</a></li>
     <li><a href="${import.meta.env.BASE_URL}about/index.html">About</a></li>
     <li><a href="${import.meta.env.BASE_URL}contact/index.html">Contact</a></li>
   </ul>

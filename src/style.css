@@ -64,6 +64,12 @@ sp-station-quake-map.large {
 }
 
 
+.hide {
+  display: none;
+}
+.show {
+  display: block;
+}
 
 
 
