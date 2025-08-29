@@ -115,9 +115,9 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
 }).then( ([qml, staxml]) => {
 
   const historicalLayer = historicEarthquakes(quakeMap, timeRange);
-  const tectonicLayer = tectonicSummary(quakeMap);
+  const tectonicSummaryLayer = null;//tectonicSummary(quakeMap);
   const stateBoundLayer = stateBoundaries(quakeMap);
-  return Promise.all([qml, staxml, stateBoundLayer, tectonicLayer, historicalLayer])
+  return Promise.all([qml, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer])
     .then( () => {
       const map = document.querySelector("sp-station-quake-map");
       map.redraw();

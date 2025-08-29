@@ -10,6 +10,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         heli: resolve(__dirname, 'helicorder/index.html'),
+        historical: resolve(__dirname, 'historical/index.html'),
         about: resolve(__dirname, 'about/index.html'),
         contact: resolve(__dirname, 'contact/index.html'),
       },
