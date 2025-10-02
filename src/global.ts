@@ -34,7 +34,9 @@ export const SELECTED_ROW = "selectedRow";
 
 if (true) {
 app.innerHTML = `
-  <h3>Recent Earthquakes near South Carolina</h3>
+  <h3>Recent Significant Global Earthquakes</h3>
+  <h5>as recorded in South Carolina</h5>
+
     <div class="showalleq show">
   <sp-station-quake-map
     tileUrl='${BASE_TILE}'
@@ -46,6 +48,7 @@ app.innerHTML = `
   </div>
   <div class="showquake hide">
     <button id="backToAllBtn">Back</button>
+    <div class="loadingmessage hide">Loading data...</div>
     <sp-organized-display
       sort="distance"
       tileUrl='${BASE_TILE}'
@@ -153,7 +156,6 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
 
 
 function displayAllQuakes() {
-
   document.querySelectorAll(".showquake").forEach( el => {
     el.classList.remove("show");
     el.classList.add("hide");
@@ -169,6 +171,7 @@ function displayQuake(quake: sp.quakeml.Quake) {
     displayAllQuakes();
     return;
   }
+  document.querySelectorAll(".loadingmessage").forEach(el => el.classList.replace("hide", "show"));
   document.querySelectorAll(".showquake").forEach( el => {
     el.classList.remove("hide");
     el.classList.add("show");
@@ -192,7 +195,7 @@ function displayQuake(quake: sp.quakeml.Quake) {
   for(const c of allChans) {
     console.log(`${c.sourceId}`)
   }
-  loader.load().then( ds => {
+  return loader.load().then( ds => {
     console.log(`loader ${ds.waveforms.length} seismograms`);
     ds.waveforms.forEach(sdd => {
 console.log(sdd)
@@ -220,5 +223,8 @@ console.log(sdd)
     orgDisp.seismographConfig.doGain = true;
     orgDisp.seismographConfig.ySublabelIsUnits = true;
     orgDisp.seisData = ds.processedWaveforms;
+    return ds;
+  }).then( () => {
+    document.querySelectorAll(".loadingmessage").forEach(el => el.classList.replace("show", "hide"));
   });
 }
