@@ -11,7 +11,7 @@ import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
   addGraticule,
   historicEarthquakes, stateBoundaries, tectonicSummary,
-  HATCHER_SC_GEOL, HISTORIC_URL
+  HATCHER_SC_GEOL, HISTORIC_URL, ANCIENT_URL
 } from './maplayers';
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
@@ -75,15 +75,25 @@ Promise.all([historicalLayer, stateBoundLayer]).then(()=> {
   quakeMap.redraw();
 });
 
-
-sp.usgsgeojson.loadUSGSGeoJsonSummary(HISTORIC_URL).then( qml => {
-    return qml.eventList.filter(q => {
-        console.log(`mag check ${q.magnitude}`)
-        return q?.magnitude && q.magnitude.mag > 3;
+const eqUrls = [
+  ANCIENT_URL,
+  HISTORIC_URL
+];
+Promise.all(eqUrls.map( url => {
+  return sp.usgsgeojson.loadUSGSGeoJsonSummary(url)
+    .then( qml => {
+      return qml.eventList.filter(q => {
+          return q?.magnitude && q.magnitude.mag > 3;
+        });
       });
-  }).then(quakeList => {
-    let table = document.querySelector("sp-quake-table");
-    table.quakeList = quakeList;
-  }).catch( e => {
-    console.log(e);
-  });
+    })
+).then((qmlList) => {
+  let quakeList = [];
+  qmlList.forEach( qmlEvents => quakeList = quakeList.concat(qmlEvents));
+  return quakeList;
+}).then(quakeList => {
+  let table = document.querySelector("sp-quake-table");
+  table.quakeList = quakeList;
+}).catch( e => {
+  console.log(e);
+});
