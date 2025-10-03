@@ -13,11 +13,11 @@ export const HATCHER_SC_GEOL = "http://www.seis.sc.edu/tilecache/Hatcher_SC_Geol
 const HIST_QUAKES_GLOBAL_URL = "http://www.seis.sc.edu/tilecache/usgscatalog/{z}/{y}/{x}/"
 // Overlay layers (TMS)
 
-export function historicEarthquakesGlobal(eqMap) {
+export function historicEarthquakesGlobal(eqMap: sp.leafletutil.QuakeStationMap) {
 
 }
 
-export function historicEarthquakes(eqMap, timeRange: Interval, style ) {
+export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeRange: Interval, style: object ) {
   if (! style) {
     style = {
       color: "grey",
@@ -38,18 +38,19 @@ export function historicEarthquakes(eqMap, timeRange: Interval, style ) {
                           hisGeoJson,
                           {
                             pointToLayer: function(geoJsonPoint, latlng) {
-                              let mag_radius = 2;
+                              let mag_radius = 3;
+                              let mag_min = 2;
                               const eqTime = DateTime.fromMillis(geoJsonPoint.properties.time);
-                              if (geoJsonPoint.properties.mag < 3){
+                              if (geoJsonPoint.properties.mag < mag_min){
                                 return L.circleMarker(latlng,
                                     {
-                                      radius: 3,
+                                      radius: mag_radius,
                                     }
                                 ).bindTooltip(`${eqTime.toLocaleString(DateTime.DATE_FULL)} ${geoJsonPoint.properties.mag}`);
                               } else {
                                 return L.circleMarker(latlng,
                                     {
-                                      radius: geoJsonPoint.properties.mag*3,
+                                      radius: geoJsonPoint.properties.mag*mag_radius,
                                     }
                                 ).bindTooltip(`${eqTime.toLocaleString(DateTime.DATE_FULL)} ${geoJsonPoint.properties.mag}`);
                               }
@@ -63,8 +64,8 @@ export function historicEarthquakes(eqMap, timeRange: Interval, style ) {
 
 export const TECTONIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/tectonic.geojson"
 
-function tooltipper(feature, layer) {
-  layer.bindTooltip( (f => feature.properties.name));
+function tooltipper(feature: L.Feature, layer: L.Layer) {
+  layer.bindTooltip( (() => feature.properties.name));
   layer.addEventListener("click", (evt) => {
     console.log(`click ${feature.id} ${feature.properties.name}`);
     const dialogDiv = document.querySelector("dialog div");
@@ -73,7 +74,7 @@ function tooltipper(feature, layer) {
   });
 };
 
-export function tectonicSummary(eqMap, style) {
+export function tectonicSummary(eqMap: sp.leafletutil.QuakeStationMap, style) {
   if (! style) {
     style = {
       color: "blue",
@@ -81,7 +82,8 @@ export function tectonicSummary(eqMap, style) {
       fillColor: "none"
     }
   }
-  return sp.usgsgeojson.loadUSGSTectonicLayer(TECTONIC_URL).then(tecGeoJson => {
+  return sp.usgsgeojson.loadUSGSTectonicLayer(TECTONIC_URL)
+  .then((tecGeoJson: sp.usgsgeojson.USGSTectonicGeoJsonSummary) => {
     eqMap.addGeoJsonLayer("Tectonic Regions",
                         tecGeoJson.tectonic,
                         {
@@ -92,7 +94,7 @@ export function tectonicSummary(eqMap, style) {
   });
 }
 
-export function stateBoundaries(eqMap, style) {
+export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style: object) {
   if (!style) {
     style = {
       color: "black",
@@ -101,7 +103,7 @@ export function stateBoundaries(eqMap, style) {
       fillColor: "none"
     };
   }
-  return sp.util.pullJson(STATE_BOUNDARY_URL).then(statesJson => {
+  return sp.util.pullJson(STATE_BOUNDARY_URL).then((statesJson: object) => {
       eqMap.addGeoJsonLayer("US States",
                           statesJson,
                           {
@@ -113,7 +115,7 @@ export function stateBoundaries(eqMap, style) {
 }
 
 
-export function addGraticule(eqMap, style) {
+export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style: object) {
   if (!style) {
     style = {
         color: '#777',

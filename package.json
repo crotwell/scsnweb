@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "vite",
     "buildtsc": "tsc && vite build",
-    "build": "vite build ",
+    "build": "vite build  --base=/scsn/scsnweb/",
     "preview": "vite preview",
     "tsc": "tsc --project tsconfig.json"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.20",
+    "@types/luxon": "^3.7.1",
     "typescript": "^5.9.3",
     "vite": "^7.0.0"
   },

@@ -1,5 +1,7 @@
 
 
+import * as L from 'leaflet';
+
 export function bestLatLonGradiculeIncrement(bounds: L.LatLngBounds): Array<Number> {
   let outLat = 20;
   let outLng = 20;

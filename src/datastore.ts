@@ -1,5 +1,5 @@
-import * as sp from 'seisplotjs';
 
+import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 export const SC_QUAKE_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
