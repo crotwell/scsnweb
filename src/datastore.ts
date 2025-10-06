@@ -32,7 +32,7 @@ export function retrieveStationXML(): Promise<Array<sp.stationxml.Network>> {
   });
 }
 
-export function seismometerChannels(staxml) {
+export function seismometerChannels(staxml: Array<sp.stationxml.Network>): Array<sp.stationxml.Network> {
   staxml.forEach(net=> {
     net.stations.forEach(sta => {
       const seisChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") && (
@@ -52,14 +52,14 @@ export function loadStations(): Promise<Array<sp.stationxml.Station>> {
   if (!staStored) {
     return retrieveStationXML().then( staxml => {
       //localStorage.setItem("stationxml", JSON.stringify(staxml));
-      let staList = [];
+      let staList: Array<sp.stationxml.Station> = [];
       staxml.forEach(net=> {
         staList = staList.concat(net.stations);
       });
       return staList;
     })
   } else {
-    return new Promise((resolve, reject) => { resolve(JSON.parse(staStored)); });
+    return new Promise((resolve, _reject) => { resolve(JSON.parse(staStored)); });
   }
 }
 
@@ -67,16 +67,18 @@ export function retrieveQuakeML(): Promise<sp.quakeml.EventParameters> {
   return sp.quakeml.fetchQuakeML(SC_QUAKE_URL);
 }
 
-export function retrieveGlobalSignificant(timeRange: Interval): Promise<sp.quakeml.EventParameters> {
+export function retrieveGlobalSignificant(timeRange?: Interval): Promise<sp.quakeml.EventParameters> {
   if (!timeRange) {
-    const ONE_YEAR = Duration.fromISO("P1Y");
     const ONE_MONTH = Duration.fromISO("P31D");
-    const ONE_WEEK = Duration.fromISO("P7D");
     const NOW = DateTime.utc();
-    timeRange = Interval.fromDateTimes(NOW.minus(ONE_MONTH), NOW);
+    timeRange = sp.util.startEnd(NOW.minus(ONE_MONTH), NOW);
+  }
+  if (timeRange.isValid && timeRange.start?.isValid && timeRange.end?.isValid) {
     const usgsSignificantUrl = `https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?starttime=${timeRange.start.toISO()}&endtime=${timeRange.end.toISO()}&minsig=600&orderby=time`
     return sp.usgsgeojson.loadRawUSGSGeoJsonSummary(usgsSignificantUrl).then((geojson: sp.usgsgeojson.USGSGeoJsonSummary) => {
       return sp.usgsgeojson.parseGeoJSON(geojson);
     });
+  } else {
+    throw new Error("Invalid time range");
   }
 }

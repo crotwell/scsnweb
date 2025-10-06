@@ -2,6 +2,7 @@ import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 import * as L from 'leaflet';
 import "leaflet-polar-graticule";
+import type {Feature, MultiPolygon} from 'geojson';
 
 import {bestLatLonGradiculeIncrement} from './bestgraticule';
 
@@ -10,14 +11,10 @@ export const ANCIENT_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_ancient
 export const HISTORIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_historical.json"
 export const HATCHER_SC_GEOL = "http://www.seis.sc.edu/tilecache/Hatcher_SC_Geol/{z}/{x}/{y}.png"
 
-const HIST_QUAKES_GLOBAL_URL = "http://www.seis.sc.edu/tilecache/usgscatalog/{z}/{y}/{x}/"
+export const HIST_QUAKES_GLOBAL_URL = "http://www.seis.sc.edu/tilecache/usgscatalog/{z}/{y}/{x}/"
 // Overlay layers (TMS)
 
-export function historicEarthquakesGlobal(eqMap: sp.leafletutil.QuakeStationMap) {
-
-}
-
-export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeRange: Interval, style: object ) {
+export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeRange?: Interval|null, style?: object ) {
   if (! style) {
     style = {
       color: "grey",
@@ -26,10 +23,11 @@ export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeR
     };
   }
   if (! timeRange) {
-    timeRange = Interval.after(DateTime.utc(), Duration.fromISO('PT1S'));
+    timeRange = Interval.before(DateTime.utc(), Duration.fromISO('P1MT1S'));
   }
   const historicalLayer =
-    sp.usgsgeojson.loadRawUSGSGeoJsonSummary(HISTORIC_URL).then(hisGeoJson => {
+    sp.usgsgeojson.loadRawUSGSGeoJsonSummary(HISTORIC_URL)
+    .then(hisGeoJson => {
       hisGeoJson.features = hisGeoJson.features.filter(q => {
         const qTime = DateTime.fromMillis(q.properties.time);
         return qTime < timeRange.start;
@@ -64,17 +62,26 @@ export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeR
 
 export const TECTONIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/tectonic.geojson"
 
-function tooltipper(feature: L.Feature, layer: L.Layer) {
-  layer.bindTooltip( (() => feature.properties.name));
-  layer.addEventListener("click", (evt) => {
-    console.log(`click ${feature.id} ${feature.properties.name}`);
-    const dialogDiv = document.querySelector("dialog div");
-    dialogDiv.innerHTML = feature.properties.summary;
-    dialog.showModal();
+if (!document.querySelector("dialog")) {
+  const dialogEl = document.createElement("dialog");
+  dialogEl.innerHTML = "<div></div>";
+  document.querySelector("body")?.appendChild(dialogEl);
+}
+const dialog = document.querySelector("dialog");
+const dialogDiv = document.querySelector("dialog div") as HTMLElement;
+function tooltipper(feature: GeoJSON.Feature, layer: L.Layer) {
+  const name = feature?.properties?.name ? feature.properties.name : "unknown";
+  layer.bindTooltip( (() => name));
+  layer.addEventListener("click", () => {
+    console.log(`click ${feature.id} ${name}`);
+    if (dialog && dialogDiv) {
+      dialogDiv.innerHTML = feature?.properties?.summary;
+      dialog.showModal();
+    }
   });
 };
 
-export function tectonicSummary(eqMap: sp.leafletutil.QuakeStationMap, style) {
+export function tectonicSummary(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
   if (! style) {
     style = {
       color: "blue",
@@ -94,7 +101,16 @@ export function tectonicSummary(eqMap: sp.leafletutil.QuakeStationMap, style) {
   });
 }
 
-export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style: object) {
+
+export interface StatesGeoJsonProperties {
+  GEO_ID: string;
+  STATE: string;
+  NAME: string;
+  LSAD: string;
+  CENSUSAREA: string;
+}
+
+export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
   if (!style) {
     style = {
       color: "black",
@@ -103,19 +119,22 @@ export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style: ob
       fillColor: "none"
     };
   }
-  return sp.util.pullJson(STATE_BOUNDARY_URL).then((statesJson: object) => {
-      eqMap.addGeoJsonLayer("US States",
-                          statesJson,
-                          {
-                            style: style
-                          }
-                        );
-      return statesJson;
+  return sp.util.pullJson(STATE_BOUNDARY_URL)
+  .then((statesJson: object) => {
+    return statesJson as Feature<MultiPolygon, StatesGeoJsonProperties>;
+  }).then((statesJson: Feature<MultiPolygon, StatesGeoJsonProperties>) => {
+        eqMap.addGeoJsonLayer("US States",
+                            statesJson,
+                            {
+                              style: style
+                            }
+                          );
+        return statesJson;
     });
 }
 
 
-export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style: object) {
+export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
   if (!style) {
     style = {
         color: '#777',
@@ -123,13 +142,14 @@ export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style: objec
         weight: 1
     };
   }
+  if (!eqMap.map) {throw new Error("map missing on QuakeStationMap");}
   const intervalLatLng = bestLatLonGradiculeIncrement(eqMap.map.getBounds());
-        L.graticule({
-            sphere: true,
-            style: style,
-            intervalLat: intervalLatLng[0],
-            intervalLng: intervalLatLng[1],
-            centerLonLabels: true ,
-            lngBounds:[-180,181] ,
-        }).addTo(eqMap.map);
+  L.graticule({
+      sphere: true,
+      style: style,
+      intervalLat: intervalLatLng[0],
+      intervalLng: intervalLatLng[1],
+      centerLonLabels: true ,
+      lngBounds:[-180,181] ,
+  }).addTo(eqMap.map);
 }

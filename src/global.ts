@@ -1,17 +1,16 @@
 import './style.css'
-import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 
 import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
-import * as L from 'leaflet';
 import "leaflet-polar-graticule";
 
 import {createNavigation} from './navbar';
 import {retrieveStationXML, retrieveGlobalSignificant, seismometerChannels} from './datastore';
 import {
   addGraticule,
-  historicEarthquakes, stateBoundaries, tectonicSummary
 } from './maplayers';
+import {init} from './util';
+init();
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 export const UTC_TIMEZONE = sp.luxon.FixedOffsetZone.utcInstance;
@@ -19,10 +18,6 @@ export const UTC_TIMEZONE = sp.luxon.FixedOffsetZone.utcInstance;
 createNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
-const NAT_GEO = "http://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}"
-const NAT_GEO_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
-const WORLD_TOPO = "http://www.seis.sc.edu/tilecache/USGSTopo/{z}/{y}/{x}"
-const WORLD_TOPO_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
 const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
@@ -65,30 +60,37 @@ app.innerHTML = `
 
 const dialog = document.querySelector("dialog");
 const closeDialogButton = document.querySelector("dialog button");
+if (!dialog || ! closeDialogButton) {
+  throw new Error("Can't find dialog");
+}
 closeDialogButton.addEventListener("click", () => {
   dialog.close();
 });
 
+function getQuakeMap(): sp.leafletutil.QuakeStationMap {
+  const quakeMap = document.querySelector("sp-station-quake-map");
+  if (!quakeMap || ! (quakeMap instanceof sp.leafletutil.QuakeStationMap)) {
+    throw new Error("Can't find quake map");
+  }
+  return quakeMap;
+}
 
-const quakeMap = document.querySelector("sp-station-quake-map");
-
-let allQuakes = [];
-let inventory = null;
+let allQuakes: Array<sp.quakeml.Quake> = [];
+let inventory: Array<sp.stationxml.Network> = [];
 const backBtn = document.querySelector("#backToAllBtn");
-backBtn.addEventListener("click", () => {
-  displayAllQuakes();
-});
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    displayAllQuakes();
+  });
+} else {
+  throw new Error("Can't find back button");
+}
 
 
-function displayForTime(timeRange: Interval, quakes: Array<Quake>): Array<Quake> {
-  const quakesInTime = allQuakes.filter(q => {
+function displayForTime(timeRange: Interval, quakes: Array<sp.quakeml.Quake>): Array<sp.quakeml.Quake> {
+  const quakesInTime = quakes.filter(q => {
     return timeRange.start <= q.time && q.time <= timeRange.end;
   });
-  const oldQuakes = allQuakes.filter(q => {
-    return q.time < timeRange.start;
-  });
-
-  let quakeMap = document.querySelector("sp-station-quake-map");
 
   let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
   //colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
@@ -115,19 +117,24 @@ function displayForTime(timeRange: Interval, quakes: Array<Quake>): Array<Quake>
         }
       `);
   quakeTable.addEventListener("quakeclick", ce => {
-    console.log(`quakeclick: ${ce.detail.quake}`);
-    displayQuake(ce.detail.quake);
+    if (ce instanceof CustomEvent && ce.detail?.quake) {
+      console.log(`quakeclick: ${ce.detail.quake}`);
+      displayQuake(ce.detail.quake);
+    }
   });
 
   quakeTable.quakeList = quakesInTime;
-  document.querySelector("div.showalleq").appendChild(quakeTable);
+  const showAllEq = document.querySelector("div.showalleq");
+  if (showAllEq) {showAllEq.appendChild(quakeTable);}
   quakeTable.draw();
+  const quakeMap = getQuakeMap();
   quakeMap.quakeList = []
   quakeMap.addQuake(quakesInTime);
-  quakeMap.onRedraw = (eqMap) => {
-    addGraticule(eqMap);
+  quakeMap.onRedraw = () => {
+    addGraticule(quakeMap);
   };
   quakeMap.redraw();
+  return quakes;
 }
 
 const oldQuakeTimeDuration = Duration.fromISO('P1Y');
@@ -144,13 +151,13 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   //const trEl = document.querySelector("sp-timerange");
   displayForTime(timeRange, allQuakes);
 
-  let table = document.querySelector("sp-quake-table");
-  console.log(`got ${qml.eventList.length} quakes ${table.quakeList.length}`)
-  const map = document.querySelector("sp-station-quake-map");
+  let table = document.querySelector("sp-quake-table") as sp.infotable.QuakeTable;
+  console.log(`got ${qml.eventList.length} quakes ${table?.quakeList.length}`);
+  const quakeMap = getQuakeMap();
   staxml.forEach(net=> {
-    map.addStation(net.stations);
+    quakeMap.addStation(net.stations);
   });
-  map.redraw();
+  quakeMap.redraw();
   return [qml, staxml];
 });
 
@@ -200,10 +207,12 @@ function displayQuake(quake: sp.quakeml.Quake) {
     ds.waveforms.forEach(sdd => {
 console.log(sdd)
       sdd.quakeList.forEach( quake => {
-        const pickMarkers = sp.seismograph.createMarkerForPicks(
-          quake.preferredOrigin, sdd.channel);
-        sdd.addMarkers(pickMarkers);
-        sdd.alignmentTime = quake.time;
+        if (quake.preferredOrigin && sdd.channel) {
+          const pickMarkers = sp.seismograph.createMarkerForPicks(
+            quake.preferredOrigin, sdd.channel);
+          sdd.addMarkers(pickMarkers);
+          sdd.alignmentTime = quake.time;
+        }
       });
     });
 
@@ -219,10 +228,14 @@ console.log(sdd)
       return out;
     });
 
-    let orgDisp = document.querySelector("sp-organized-display");
-    orgDisp.seismographConfig.doGain = true;
-    orgDisp.seismographConfig.ySublabelIsUnits = true;
-    orgDisp.seisData = ds.processedWaveforms;
+    let orgDisp = document.querySelector("sp-organized-display") as sp.organizeddisplay.OrganizedDisplay;
+    if (orgDisp) {
+      orgDisp.seismographConfig.doGain = true;
+      orgDisp.seismographConfig.ySublabelIsUnits = true;
+      orgDisp.seisData = ds.processedWaveforms;
+    } else {
+      throw new Error("Can't find sp-organized-display element");
+    }
     return ds;
   }).then( () => {
     document.querySelectorAll(".loadingmessage").forEach(el => el.classList.replace("show", "hide"));

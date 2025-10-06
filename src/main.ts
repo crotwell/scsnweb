@@ -1,16 +1,14 @@
 import './style.css'
-import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 
 import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
-import * as L from 'leaflet';
 import "leaflet-polar-graticule";
 
 import {createNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
   addGraticule,
-  historicEarthquakes, stateBoundaries, tectonicSummary
+  historicEarthquakes, stateBoundaries
 } from './maplayers';
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
@@ -18,10 +16,6 @@ export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 createNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
-const NAT_GEO = "http://www.seis.sc.edu/tilecache/NatGeo/{z}/{y}/{x}"
-const NAT_GEO_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
-const WORLD_TOPO = "http://www.seis.sc.edu/tilecache/USGSTopo/{z}/{y}/{x}"
-const WORLD_TOPO_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
 const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
@@ -48,25 +42,22 @@ app.innerHTML = `
 
 const dialog = document.querySelector("dialog");
 const closeDialogButton = document.querySelector("dialog button");
+if (!dialog || !closeDialogButton) {throw new Error("Can't find dialog");}
 closeDialogButton.addEventListener("click", () => {
   dialog.close();
 });
 
 
-const quakeMap = document.querySelector("sp-station-quake-map");
+const quakeMap = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
+if (!quakeMap) {throw new Error("Can't find sp-station-quake-map");}
 
-let allQuakes = [];
+let allQuakes: Array<sp.quakeml.Quake> = [];
 
 
-function displayForTime(timeRange: Interval, quakes: Array<Quake>): Array<Quake> {
-  const quakesInTime = allQuakes.filter(q => {
+function displayForTime(timeRange: Interval, quakes: Array<sp.quakeml.Quake>): Array<sp.quakeml.Quake> {
+  const quakesInTime = quakes.filter(q => {
     return timeRange.start <= q.time && q.time <= timeRange.end;
   });
-  const oldQuakes = allQuakes.filter(q => {
-    return q.time < timeRange.start;
-  });
-
-  let quakeMap = document.querySelector("sp-station-quake-map");
 
   let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
   colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
@@ -86,10 +77,11 @@ function displayForTime(timeRange: Interval, quakes: Array<Quake>): Array<Quake>
   quakeTable.draw();
   quakeMap.quakeList = []
   quakeMap.addQuake(quakesInTime);
-  quakeMap.onRedraw = (eqMap) => {
-    addGraticule(eqMap);
+  quakeMap.onRedraw = () => {
+    addGraticule(quakeMap);
   };
   quakeMap.redraw();
+  return quakes;
 }
 
 const oldQuakeTimeDuration = Duration.fromISO('P1Y');
@@ -104,13 +96,13 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   //const trEl = document.querySelector("sp-timerange");
   displayForTime(timeRange, allQuakes);
 
-  let table = document.querySelector("sp-quake-table");
+  let table = document.querySelector("sp-quake-table") as sp.infotable.QuakeTable;
+  if (!table) {throw new Error("Can't find sp-quake-table");}
   console.log(`got ${qml.eventList.length} quakes ${table.quakeList.length}`)
-  const map = document.querySelector("sp-station-quake-map");
   staxml.forEach(net=> {
-    map.addStation(net.stations);
+    quakeMap.addStation(net.stations);
   });
-  map.redraw();
+  quakeMap.redraw();
   return [qml, staxml];
 }).then( ([qml, staxml]) => {
 
@@ -119,8 +111,7 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   const stateBoundLayer = stateBoundaries(quakeMap);
   return Promise.all([qml, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer])
     .then( () => {
-      const map = document.querySelector("sp-station-quake-map");
-      map.redraw();
+      quakeMap.redraw();
       console.log("Promise  for map done")
     });
 });

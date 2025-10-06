@@ -33,38 +33,45 @@ app.innerHTML = `
 
 
 const MINMAX_URL = "https://eeyore.seis.sc.edu/minmax";
-const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
+//const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 const DEFAULT_LOC_CODE = "00";
 const SEIS_MINMAX_CODE = "X";
 const SM_MINMAX_CODE = "Y";
 
-const heli = document.querySelector("sp-helicorder");
+const heli = document.querySelector("sp-helicorder") as sp.helicorder.Helicorder;
+if (!heli) {throw new Error("Can't find sp-helicorder");}
 heli.addEventListener("helimousemove", (hEvent) => {
-  const mouseTimeSpan = document.querySelector("#mousetime");
-  if (mouseTimeSpan) {
-    mouseTimeSpan.textContent = `${hEvent.detail.time.toLocal().toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}`;
-  }
+  if (hEvent instanceof CustomEvent && hEvent?.detail.time) {
+    const mouseTimeSpan = document.querySelector("#mousetime");
+    if (mouseTimeSpan) {
+      mouseTimeSpan.textContent = `${hEvent.detail.time.toLocal().toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}`;
+    }
+}
 });
-heli.addEventListener("mouseleave", () => {
-  const mouseTimeSpan = document.querySelector("#mousetime");
-  if (mouseTimeSpan) {
-    mouseTimeSpan.textContent = "";
+heli.addEventListener("mouseleave", (hEvent) => {
+  if (hEvent instanceof CustomEvent && hEvent?.detail.time) {
+    const mouseTimeSpan = document.querySelector("#mousetime");
+    if (mouseTimeSpan) {
+      mouseTimeSpan.textContent = "";
+    }
   }
 });
 
-const map = document.querySelector("sp-station-quake-map");
+const map = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
+if (!map) {throw new Error("Can't find sp-station-quake-map");}
 map.onRedraw = () => {
   addGraticule(map);
 }
-retrieveStationXML().then(staxml => {
-  return Promise.all([staxml, stateBoundaries(map)]);
-}).then(([staxml, statelines]) => {
+Promise.all([retrieveStationXML(), stateBoundaries(map)])
+.then(([staxml, statelines]) => {
   staxml.forEach(net=> {
     map.addStation(net.stations);
   });
   map.addEventListener(sp.stationxml.STATION_CLICK_EVENT, (evt) => {
-    console.log(`sta click: ${evt.detail.station.stationCode}`);
-    const heli = document.querySelector("sp-helicorder");
+    if ( ! (evt instanceof CustomEvent ) || !(evt?.detail.station)) {
+      throw new Error("event not sp.stationxml.STATION_CLICK_EVENT");
+    }
+    console.log(`sta click: ${evt?.detail.station.stationCode}`);
     let minMaxQ = new sp.mseedarchive.MSeedArchive(
           MINMAX_URL,
           "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H",
@@ -86,6 +93,7 @@ retrieveStationXML().then(staxml => {
     );
     fake.sampleRate = 2;
 
+    if (!heli.heliConfig.fixedTimeScale) {throw new Error("Heli must be fixedTimeScale");}
     let minMaxSddList = [
       sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(
           fake,
@@ -93,10 +101,11 @@ retrieveStationXML().then(staxml => {
         )
       ];
     minMaxQ.loadSeismograms(minMaxSddList).then(sddList => {
-      let nowMarker = {
+      let nowMarker: sp.seismographmarker.MarkerType = {
             markertype: "predicted",
             name: "now",
             time: DateTime.utc(),
+            description: "now"
           };
       if (sddList && sddList.length > 0) {
         sddList[sddList.length-1].addMarkers(nowMarker);
@@ -112,12 +121,12 @@ retrieveStationXML().then(staxml => {
 });
 
 setInterval( () => {
-  const heli = document.querySelector("sp-helicorder");
   if (heli.seisData && heli.seisData.length > 0) {
     let nowMarker = {
           markertype: "predicted",
           name: "now",
           time: DateTime.utc(),
+          description: "now"
         };
     heli.seisData[0].addMarkers(nowMarker);
   }
