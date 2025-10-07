@@ -1,6 +1,7 @@
 
 
 import * as L from 'leaflet';
+import 'leaflet-polar-graticule';
 
 export function bestLatLonGradiculeIncrement(bounds: L.LatLngBounds): Array<Number> {
   let outLat = 20;
