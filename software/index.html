@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Software</title>
+  </head>
+  <body>
+    <div id="nav"></div>
+    <div id="app">
+      <h3>Software</h3>
+
+      <p>In the seismology program at the University of South Carolina we have an active software development effort. Current projects are listed below.</p>
+
+			<ul class="blurb">
+        <li>
+          <h3>Seisplotjs</h3>
+          <a href="https://github.com/crotwell/seisplotjs">Seisplotjs</a> is a
+            javascript library for retrieving, processing and displaying
+            seismic data in the browser.
+            There are some <a href="http://www.seis.sc.edu/%7Ecrotwell/seisplotjs_demo/">
+            examples available</a>.
+        </li>
+        <li>
+					<h3>TauP</h3>
+					<a href="taup/index.html">TauP</a> is a seismic travel time calculator.
+          In addition to travel times, it can calculate derivative information
+          such as ray paths through the earth, pierce and turning points. It
+          handles many types of velocity models and can calculate times for
+          virtually any seismic phase with a phase parser.
+        </li>
+       <li>
+				<h3>Standing Order for Data</h3>
+				<a href="http://www.seis.sc.edu/sod/"><img src="images/sod.gif" class="even"/></a>
+        <a href="http://www.seis.sc.edu/sod/">SOD</a>, Standing Order for Data,
+        is a framework to define rules to select seismic events, stations, and data.
+        It then allows you to apply processing to the events, stations, and data
+        and currently contains a large set of rules that allow you to select with
+        great precision in these items.  The processes mainly consist of simple
+        data transformation and retrieval, but SOD defines hooks to allow you to
+        cleanly insert your own processing steps, either written in Java or an
+        external program.
+      </li>
+      <li>
+			 <h3>SeedCodec</h3>
+	SeedCodec is a library of seismic compression and decompression routines in java. Currently support is for
+	Steim1 compression, and decompression of Steim1 and 2, dwssn, cdsn and sro.
+	More information can be found <a href="seedCodec.html">here</a>.
+      </li>
+			 <li>
+			 <h3>seisFile</h3>
+	SeisFile is a library for reading and writing seismic file formats in java. Currently support is for
+	SAC, Miniseed 2 and <a href="https://docs.fdsn.org/projects/miniseed3/">Miniseed 3</a>.
+	More information can be found <a href="seisFile.html">here</a>.
+      </li>
+			 <li>
+			 <h3>simplemseed</h3>
+	<a href="https://pypi.org/project/simplemseed/">Simplemseed</a> is a
+  python library for reading and writing miniseed 3.
+      </li>
+			 <li>
+			 <h3>simpledali</h3>
+	<a href="https://pypi.org/project/simpledali/">Simpledali</a> is a
+  python library for communicating with
+  <a href="https://github.com/EarthScope/ringserver/">Ringserver</a> from IRIS
+    via the <a href="https://earthscope.github.io/libdali/datalink-protocol.html">datalink</a> protocol.
+      </li>
+			</ul>
+
+    </div>
+    <script type="module" src="/src/software.ts"></script>
+  </body>
+</html>
