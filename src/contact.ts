@@ -6,7 +6,7 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
 app.innerHTML = `
-<h1>Contact</h1>
+<h3>Contact</h3>
 
 <h3>South Carolina Seismic Network</h3>
 
