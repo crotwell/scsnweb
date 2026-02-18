@@ -63,6 +63,9 @@ sp-station-quake-map.large {
   height: 800px;
 }
 
+.loadingmessage {
+  color: red;
+}
 
 .hide {
   display: none;
