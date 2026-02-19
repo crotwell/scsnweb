@@ -15,22 +15,38 @@
 
 header {
   background-color: black;
+
 }
 
 div.uscLogo {
   background-color: black;
+  display: flex;
+  justify-content: space-between;
 }
 div.uscLogo img {
   height: 60px;
 }
+div.uscLogo a.seoe {
+}
+
+span.seoeLogo {
+  align-self: center;
+  background-color: black;
+  justify-self: end;
+  font-size: 1.9em;
+  margin: 3px;
+  font-family: 'Berlingske Serif', 'Georgia', serif;
+}
+span.seoeLogo a {
+  color: white;
+}
 
 div.scsnLogo {
+  background-color: #73000a;
+}
+div.scsnLogo span a {
   font-size: 1.9em;
   color: white;
-  background-color: #73000a;
-  margin: 3px;
-}
-div.scsnLogo span {
   margin: 3px;
   font-family: 'Berlingske Serif', 'Georgia', serif;
 }

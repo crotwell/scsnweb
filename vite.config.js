@@ -15,10 +15,10 @@ export default defineConfig({
         heli: resolve(__dirname, 'helicorder/index.html'),
         historical: resolve(__dirname, 'historical/index.html'),
         global: resolve(__dirname, 'global/index.html'),
-        software: resolve(__dirname, 'software/index.html'),
         about: resolve(__dirname, 'about/index.html'),
         contact: resolve(__dirname, 'contact/index.html'),
         // research pages
+        software: resolve(__dirname, 'software/index.html'),
       },
     },
   },
