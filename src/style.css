@@ -36,6 +36,7 @@ span.seoeLogo {
   font-size: 1.9em;
   margin: 3px;
   font-family: 'Berlingske Serif', 'Georgia', serif;
+    align-self: center;
 }
 span.seoeLogo a {
   color: white;
@@ -43,12 +44,16 @@ span.seoeLogo a {
 
 div.scsnLogo {
   background-color: #73000a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 div.scsnLogo span a {
   font-size: 1.9em;
   color: white;
   margin: 3px;
   font-family: 'Berlingske Serif', 'Georgia', serif;
+  text-align: center;
 }
 
 #nav ul li {
@@ -57,10 +62,11 @@ div.scsnLogo span a {
   min-width: 5rem;
   text-align: center;
   font-family: 'Berlingske Serif', 'Georgia', serif;
+  font-size: xx-small;
 }
 
 #nav ul li a {
-  color: #73000a;
+  color: white;
 }
 
 #nav ul li:not(:last-child) {

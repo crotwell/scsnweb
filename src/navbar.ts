@@ -13,6 +13,7 @@ let navHeader = `
   </div>
   <div class="scsnLogo">
     <span><a href="${import.meta.env.BASE_URL}index.html">South Carolina Seismic Network</a></span>
+    <span id="nav"></span>
   </div>
 </header>
 `;
@@ -45,14 +46,18 @@ let navResearch = `
 `;
 
 export function createPublicNavigation() {
-  const navDiv = document.querySelector<HTMLDivElement>('#nav')!
+  const navDiv = document.querySelector<HTMLDivElement>('#head')!
   if (navDiv) {
-    navDiv.innerHTML = navHeader + navPublic;
+    navDiv.innerHTML = navHeader;
+  }
+  const innerNav = document.querySelector<HTMLDivElement>('#nav')!
+  if (innerNav) {
+    innerNav.innerHTML = navPublic;
   }
 }
 
 export function createResearchNavigation() {
-  const navDiv = document.querySelector<HTMLDivElement>('#nav')!
+  const navDiv = document.querySelector<HTMLDivElement>('#head')!
   if (navDiv) {
     navDiv.innerHTML = navHeader + navResearch;
   }
