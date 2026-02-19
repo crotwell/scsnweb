@@ -8,16 +8,15 @@ import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
   addGraticule,
-  historicEarthquakes, stateBoundaries
+  historicEarthquakes, stateBoundaries,
+  WORLD_OCEAN, WORLD_OCEAN_ATTR
 } from './maplayers';
+import {createQuakeTable} from './util';
 
-export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
+
 
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
-
-const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
-const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
 const BASE_TILE = WORLD_OCEAN;
 const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
@@ -58,21 +57,7 @@ function displayForTime(timeRange: Interval, quakes: Array<sp.quakeml.Quake>): A
   const quakesInTime = quakes.filter(q => {
     return timeRange.start <= q.time && q.time <= timeRange.end;
   });
-
-  let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
-  colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
-  let colLabels = new Map();
-  colLabels.set(sp.infotable.QUAKE_COLUMN.LOCALTIME, "Time (Eastern)");
-  for (let k of colDefaultLabels.keys()) {
-    colLabels.set(k, colDefaultLabels.get(k));
-  }
-
-  colLabels.delete(sp.infotable.QUAKE_COLUMN.MAGTYPE);
-
-  let quakeTable = new sp.infotable.QuakeTable([], colLabels);
-  quakeTable.timeZone = EASTERN_TIMEZONE;
-
-  quakeTable.quakeList = quakesInTime;
+  const quakeTable = createQuakeTable(quakesInTime);
   app.appendChild(quakeTable);
   quakeTable.draw();
   quakeMap.quakeList = []
