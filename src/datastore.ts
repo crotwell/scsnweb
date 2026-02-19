@@ -4,6 +4,8 @@ import {DateTime, Duration, Interval} from 'luxon';
 
 export const SC_QUAKE_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_quakes.xml"
 export const SC_STATION_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/CO_channels.staml"
+export const ANCIENT_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_ancient.json"
+export const HISTORIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_historical.json"
 
 
 export function retrieveStationXML(): Promise<Array<sp.stationxml.Network>> {
@@ -65,6 +67,12 @@ export function loadStations(): Promise<Array<sp.stationxml.Station>> {
 
 export function retrieveQuakeML(): Promise<sp.quakeml.EventParameters> {
   return sp.quakeml.fetchQuakeML(SC_QUAKE_URL);
+}
+export function retrieveHistoric(): Promise<Array<sp.quakeml.Quake>> {
+  return sp.usgsgeojson.loadUSGSSummary(HISTORIC_URL);
+}
+export function retrieveAncient(): Promise<Array<sp.quakeml.Quake>> {
+  return sp.usgsgeojson.loadUSGSSummary(ANCIENT_URL);
 }
 
 export function retrieveGlobalSignificant(timeRange?: Interval): Promise<sp.quakeml.EventParameters> {

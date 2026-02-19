@@ -24,6 +24,12 @@ const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 if (true) {
 app.innerHTML = `
+  <h3><a href="${import.meta.env.BASE_URL}outreach/index.html">Information for the Public</a></h3>
+  <p>Recent earthquakes in South Carolina, historical seismicity and
+    access to current data from the South Carolina Seismic Network.
+  </p>
+  <h3><a href="${import.meta.env.BASE_URL}research/index.html">Seismology Research at USC</a></h3>
+  <p>Seismology research at USC, software and tools for seismology research.</p>
   <h3>Recent Earthquakes near South Carolina</h3>
   <sp-station-quake-map
     tileUrl='${BASE_TILE}'

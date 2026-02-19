@@ -85,6 +85,13 @@ sp-station-quake-map.large {
   height: 800px;
 }
 
+.leaflet-container {
+	height: 400px;
+	width: 600px;
+	max-width: 100%;
+	max-height: 100%;
+}
+
 .loadingmessage {
   color: red;
 }

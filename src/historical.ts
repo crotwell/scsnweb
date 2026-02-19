@@ -16,15 +16,14 @@ export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
-const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
-const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+export const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
+export const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
 const BASE_TILE = WORLD_OCEAN;
 const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 if (true) {
 app.innerHTML = `
-  <h3>Historical Earthquakes near South Carolina, </h3>
   <sp-station-quake-map
     class="large"
     tileUrl='${BASE_TILE}'
