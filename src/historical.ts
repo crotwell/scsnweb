@@ -3,7 +3,7 @@ import './style.css'
 import * as sp from 'seisplotjs';
 import "leaflet-polar-graticule";
 
-import {createNavigation} from './navbar';
+import {createPublicNavigation} from './navbar';
 import {
   addGraticule,
   historicEarthquakes, stateBoundaries
@@ -13,7 +13,7 @@ init();
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 
-createNavigation();
+createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"

@@ -1,7 +1,7 @@
 import './style.css'
-import {createNavigation} from './navbar';
+import {createResearchNavigation} from './navbar';
 
-createNavigation();
+createResearchNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (false) {

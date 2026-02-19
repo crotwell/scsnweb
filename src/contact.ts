@@ -1,7 +1,7 @@
 import './style.css'
-import {createNavigation} from './navbar';
+import {createPublicNavigation} from './navbar';
 
-createNavigation();
+createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {

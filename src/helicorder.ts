@@ -1,5 +1,5 @@
 import './style.css'
-import {createNavigation} from './navbar';
+import {createPublicNavigation} from './navbar';
 import * as sp from 'seisplotjs';
 import {DateTime} from 'luxon';
 
@@ -11,7 +11,7 @@ const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, D
 const BASE_TILE = WORLD_OCEAN;
 const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
-createNavigation();
+createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
