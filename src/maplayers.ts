@@ -137,6 +137,10 @@ export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style?: o
 
 
 export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
+  if (!map) {throw new Error("map missing on QuakeStationMap");}
+  addGraticuleToMap(eqMap.map, style);
+}
+export function addGraticuleToMap(map: sp.leafletutil.QuakeStationMap, style?: object) {
   if (!style) {
     style = {
         color: '#777',
@@ -144,8 +148,7 @@ export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style?: obje
         weight: 1
     };
   }
-  if (!eqMap.map) {throw new Error("map missing on QuakeStationMap");}
-  const intervalLatLng = bestLatLonGradiculeIncrement(eqMap.map.getBounds());
+  const intervalLatLng = bestLatLonGradiculeIncrement(map.getBounds());
   L.graticule({
       sphere: true,
       style: style,
@@ -153,5 +156,5 @@ export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style?: obje
       intervalLng: intervalLatLng[1],
       centerLonLabels: true ,
       lngBounds:[-180,181] ,
-  }).addTo(eqMap.map);
+  }).addTo(map);
 }

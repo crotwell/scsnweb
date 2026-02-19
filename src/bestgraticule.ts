@@ -9,8 +9,12 @@ export function bestLatLonGradiculeIncrement(bounds: L.LatLngBounds): Array<Numb
   const latRange = bounds.getNorth()-bounds.getSouth();
   const lngRange = bounds.getEast()-bounds.getWest();
   console.log(`intervalLatLng  ${latRange}  ${lngRange}`)
-  if (latRange < 1) {
-    outLat = .25;
+  if (latRange < 0.1) {
+    outLat = 0.01;
+  } else if (latRange < 0.5) {
+    outLat = 0.1;
+  } else if (latRange < 1) {
+    outLat = 0.25;
   } else if (latRange < 5) {
     outLat = 1;
   } else if (latRange < 20) {
@@ -22,8 +26,12 @@ export function bestLatLonGradiculeIncrement(bounds: L.LatLngBounds): Array<Numb
   } else {
     outLat = 20;
   }
-  if (lngRange < 1) {
-    outLng = .25;
+  if (lngRange < 0.1) {
+    outLng = 0.01;
+  } else if (lngRange < 0.5) {
+    outLng = 0.1;
+  } else if (lngRange < 1) {
+    outLng = 0.25;
   } else if (lngRange < 10) {
     outLng = 1;
   } else if (lngRange < 20) {

@@ -8,7 +8,7 @@ import {DateTime} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
 import {
-  addGraticule,
+  addGraticuleToMap,
   historicEarthquakes, stateBoundaries
 } from './maplayers';
 import {retrieveHistoric} from './datastore';
@@ -34,15 +34,16 @@ app.innerHTML= `
   </div>
 `;
 
-const osm = L.tileLayer(WORLD_OCEAN, {
+const backgroundLayer = L.tileLayer(WORLD_OCEAN, {
 	maxZoom: 19,
 	attribution: WORLD_OCEAN_ATTR
 });
 const map = L.map("map", {
   center: [34.15, -80.74],
   zoom: 11,
-  layers: [osm]
+  layers: [backgroundLayer]
 });
+addGraticuleToMap(map);
 
 const swarmStart = DateTime.fromISO("2021-12-27T00:00");
 /*
