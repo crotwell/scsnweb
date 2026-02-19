@@ -4,9 +4,9 @@ import * as sp from 'seisplotjs';
 import {DateTime} from 'luxon';
 
 import {retrieveStationXML} from './datastore';
-import {addGraticule, stateBoundaries} from './maplayers';
-const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
-const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+import {addGraticule, stateBoundaries,
+  WORLD_OCEAN, WORLD_OCEAN_ATTR
+} from './maplayers';
 
 const BASE_TILE = WORLD_OCEAN;
 const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;

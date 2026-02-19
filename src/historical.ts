@@ -6,7 +6,8 @@ import "leaflet-polar-graticule";
 import {createPublicNavigation} from './navbar';
 import {
   addGraticule,
-  historicEarthquakes, stateBoundaries
+  historicEarthquakes, stateBoundaries,
+  WORLD_OCEAN, WORLD_OCEAN_ATTR
 } from './maplayers';
 import {init} from './util';
 init();
@@ -15,9 +16,6 @@ export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
-
-export const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/{y}/{x}"
-export const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
 const BASE_TILE = WORLD_OCEAN;
 const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
