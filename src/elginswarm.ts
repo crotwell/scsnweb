@@ -36,7 +36,7 @@ app.innerHTML= `
   </div>
 `;
 
-const map = basicSCMap(document.querySelector("#map"), 11);
+const map = basicSCMap(document.querySelector("#map"), 11, [34.15, -80.74]);
 
 const swarmStart = DateTime.fromISO("2021-12-27T00:00");
 /*
