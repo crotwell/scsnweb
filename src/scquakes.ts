@@ -1,4 +1,5 @@
 import './style.css'
+import './leaflet.css'
 
 import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
@@ -7,6 +8,9 @@ import "leaflet-polar-graticule";
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
+  basicSCMap,
+  addQuakesToMap,
+  addStationsToMap,
   addGraticule,
   historicEarthquakes, stateBoundaries,
   WORLD_OCEAN, WORLD_OCEAN_ATTR
@@ -24,13 +28,12 @@ const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 if (true) {
 app.innerHTML = `
   <h3>Recent Earthquakes near South Carolina</h3>
-  <sp-station-quake-map
-    tileUrl='${BASE_TILE}'
-    tileAttribution='${BASE_TILE_ATTR}'
-    zoomLevel="7"
-    centerLat="33.5" centerLon="-81"
-    fitbounds="false">
-  </sp-station-quake-map>
+
+  <div id='map' width="300" height="300"></div>
+  <div id='table'>
+  </div>
+  <h5>Below map</h5>
+
   <dialog>
     <div>
     </div>
@@ -47,8 +50,7 @@ closeDialogButton.addEventListener("click", () => {
 });
 
 
-const quakeMap = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
-if (!quakeMap) {throw new Error("Can't find sp-station-quake-map");}
+const quakeMap = basicSCMap(document.querySelector("#map"), 7);
 
 let allQuakes: Array<sp.quakeml.Quake> = [];
 
@@ -58,14 +60,11 @@ function displayForTime(timeRange: Interval, quakes: Array<sp.quakeml.Quake>): A
     return timeRange.start <= q.time && q.time <= timeRange.end;
   });
   const quakeTable = createQuakeTable(quakesInTime);
-  app.appendChild(quakeTable);
+  const tableDiv = document.querySelector<HTMLDivElement>('#table')!;
+  tableDiv.appendChild(quakeTable);
   quakeTable.draw();
-  quakeMap.quakeList = []
-  quakeMap.addQuake(quakesInTime);
-  quakeMap.onRedraw = () => {
-    addGraticule(quakeMap);
-  };
-  quakeMap.redraw();
+
+  addQuakesToMap(quakeMap, quakesInTime);
   return quakes;
 }
 
@@ -84,19 +83,20 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   let table = document.querySelector("sp-quake-table") as sp.infotable.QuakeTable;
   if (!table) {throw new Error("Can't find sp-quake-table");}
   console.log(`got ${qml.eventList.length} quakes ${table.quakeList.length}`)
+  let stationList = []
   staxml.forEach(net=> {
-    quakeMap.addStation(net.stations);
+    stationList = stationList.concat(net.stations);
   });
-  quakeMap.redraw();
+  addStationsToMap(quakeMap, stationList);
   return [qml, staxml];
 }).then( ([qml, staxml]) => {
 
   const historicalLayer = null; //historicEarthquakes(quakeMap, timeRange);
   const tectonicSummaryLayer = null; //tectonicSummary(quakeMap);
-  const stateBoundLayer = null; //stateBoundaries(quakeMap);
+  const stateBoundLayer = stateBoundaries();
   return Promise.all([qml, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer])
-    .then( () => {
-      quakeMap.redraw();
+    .then( ([qml, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer]) => {
+      stateBoundLayer.addTo(quakeMap);
       console.log("Promise  for map done")
     });
 });

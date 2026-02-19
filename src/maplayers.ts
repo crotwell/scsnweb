@@ -112,7 +112,37 @@ export interface StatesGeoJsonProperties {
   CENSUSAREA: string;
 }
 
-export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
+export function basicSCMap(div: HTMLDivElement, zoom=10, center=[33.70, -80.75]) {
+  const backgroundLayer = L.tileLayer(WORLD_OCEAN, {
+  	maxZoom: 19,
+  	attribution: WORLD_OCEAN_ATTR
+  });
+  const map = L.map(div, {
+    center: center,
+    zoom: zoom,
+    layers: [backgroundLayer]
+  });
+  addGraticuleToMap(map);
+  return map;
+}
+
+export function addQuakesToMap(map, quakeList): Array<L.Marker> {
+  const markers = [];
+  quakeList.forEach(q => {markers.push(sp.leafletutil.createQuakeMarker(q))});
+  const quakeLayer = L.layerGroup(markers);
+  map.addLayer(quakeLayer);
+  return markers;
+}
+
+export function addStationsToMap(map, stationList): Array<L.Marker> {
+  const markers = [];
+  stationList.forEach(q => {markers.push(sp.leafletutil.createStationMarker(q))});
+  const stationLayer = L.layerGroup(markers);
+  map.addLayer(stationLayer);
+  return markers;
+}
+
+export function stateBoundaries(style?: object) {
   if (!style) {
     style = {
       color: "black",
@@ -125,13 +155,13 @@ export function stateBoundaries(eqMap: sp.leafletutil.QuakeStationMap, style?: o
   .then((statesJson: object) => {
     return statesJson as Feature<MultiPolygon, StatesGeoJsonProperties>;
   }).then((statesJson: Feature<MultiPolygon, StatesGeoJsonProperties>) => {
-        eqMap.addGeoJsonLayer("US States",
+        return L.geoJSON(
                             statesJson,
                             {
+
                               style: style
                             }
                           );
-        return statesJson;
     });
 }
 

@@ -8,6 +8,9 @@ import {DateTime} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
 import {
+  basicSCMap,
+  addQuakesToMap,
+  addStationsToMap,
   addGraticuleToMap,
   historicEarthquakes, stateBoundaries
 } from './maplayers';
@@ -30,20 +33,10 @@ app.innerHTML= `
   </div>
   <div id='map' width="300" height="300"></div>
   <div id='table'>
-    <sp-
   </div>
 `;
 
-const backgroundLayer = L.tileLayer(WORLD_OCEAN, {
-	maxZoom: 19,
-	attribution: WORLD_OCEAN_ATTR
-});
-const map = L.map("map", {
-  center: [34.15, -80.74],
-  zoom: 11,
-  layers: [backgroundLayer]
-});
-addGraticuleToMap(map);
+const map = basicSCMap(document.querySelector("#map"), 11);
 
 const swarmStart = DateTime.fromISO("2021-12-27T00:00");
 /*
@@ -71,10 +64,7 @@ retrieveHistoric().then(quakeList => {
   document.querySelector("#numquakes").textContent = swarmQuakes.length;
   return swarmQuakes;
 }).then(swarmQuakes => {
-  const markers = [];
-  swarmQuakes.forEach(q => {markers.push(sp.leafletutil.createQuakeMarker(q))});
-  const quakeLayer = L.layerGroup(markers);
-  map.addLayer(quakeLayer);
+  const markers = addQuakesToMap(map, swarmQuakes);
   console.log(`Swarm earthquakes: ${swarmQuakes.length}`);
   const quakeTable = createQuakeTable(swarmQuakes);
   const tableDiv = document.querySelector<HTMLDivElement>('#table')!;
