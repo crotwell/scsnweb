@@ -13,6 +13,9 @@ import {
 } from './maplayers';
 import {createQuakeTable} from './util';
 
+import {init} from './util';
+init();
+
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 

@@ -4,6 +4,9 @@ import * as sp from 'seisplotjs';
 
 export function init() {
   Settings.throwOnInvalid = true;
+
+  sp.cssutil.insertCSS(sp.leafletutil.leaflet_css, "spjs_leaflet");
+  sp.cssutil.insertCSS(sp.leafletutil.stationMarker_css, "spjs_station");
 }
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");

@@ -1,15 +1,18 @@
-import './style.css'
+import './style.css';
+import './leaflet.css';
+
 import {createPublicNavigation} from './navbar';
 import * as sp from 'seisplotjs';
 import {DateTime} from 'luxon';
 
 import {retrieveStationXML} from './datastore';
-import {addGraticule, stateBoundaries,
-  WORLD_OCEAN, WORLD_OCEAN_ATTR
+import {
+  basicSCMap,
+  addStationsToMap,
 } from './maplayers';
+import {init} from './util';
+init();
 
-const BASE_TILE = WORLD_OCEAN;
-const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -17,17 +20,9 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 if (true) {
 app.innerHTML = `
 <h5>Click a station (triangle) to see last 24 hours of data.</h5>
-<sp-station-quake-map
-      centerLat="33.5"
-      centerLon="-81"
-      zoomLevel="7"
-      tileUrl='${BASE_TILE}'
-      tileAttribution='${BASE_TILE_ATTR}'
-      >
-</sp-station-quake-map>
+<div id="map">map here</div>
 <h5>Mouse Time: <span id="mousetime"></span></h5>
 <sp-helicorder></sp-helicorder>
-
 `
 }
 
@@ -37,6 +32,8 @@ const MINMAX_URL = "https://eeyore.seis.sc.edu/minmax";
 const DEFAULT_LOC_CODE = "00";
 const SEIS_MINMAX_CODE = "X";
 const SM_MINMAX_CODE = "Y";
+
+const stationMap = basicSCMap(document.querySelector("#map"), 7);
 
 const heli = document.querySelector("sp-helicorder") as sp.helicorder.Helicorder;
 if (!heli) {throw new Error("Can't find sp-helicorder");}
@@ -57,17 +54,14 @@ heli.addEventListener("mouseleave", (hEvent) => {
   }
 });
 
-const map = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
-if (!map) {throw new Error("Can't find sp-station-quake-map");}
-map.onRedraw = () => {
-  addGraticule(map);
-}
-Promise.all([retrieveStationXML(), stateBoundaries(map)])
-.then(([staxml, statelines]) => {
+const ianaTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+retrieveStationXML()
+.then((staxml) => {
   staxml.forEach(net=> {
-    map.addStation(net.stations);
+    addStationsToMap(stationMap, net.stations);
   });
-  map.addEventListener(sp.stationxml.STATION_CLICK_EVENT, (evt) => {
+  stationMap.getContainer().addEventListener(sp.stationxml.STATION_CLICK_EVENT, (evt) => {
     if ( ! (evt instanceof CustomEvent ) || !(evt?.detail.station)) {
       throw new Error("event not sp.stationxml.STATION_CLICK_EVENT");
     }
@@ -112,12 +106,19 @@ Promise.all([retrieveStationXML(), stateBoundaries(map)])
       }
       heli.heliConfig.title = `${evt.detail.station.stationCode} - ${evt.detail.station.name}`
       heli.heliConfig.lineSeisConfig.title = heli.heliConfig.title;
+      heli.heliConfig.yLabelTimeZone = ianaTZ;
+      heli.heliConfig.xAxisTimeZone = ianaTZ;
+      heli.heliConfig.xLabel = "Local Time";
+      heli.heliConfig.xSublabel = ianaTZ;
+
       heli.seisData = sddList;
 
     });
-    return Promise.all([staxml, statelines]);
+    return Promise.all([staxml]);
   });
   map.redraw();
+}).then( () => {
+  console.log("Promise  for map done")
 });
 
 setInterval( () => {

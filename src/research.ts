@@ -1,6 +1,9 @@
 import './style.css'
 import {createResearchNavigation} from './navbar';
 
+import {init} from './util';
+init();
+
 createResearchNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 

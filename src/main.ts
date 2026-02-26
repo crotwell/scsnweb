@@ -15,6 +15,9 @@ import {
 import {createMapAndTable} from './map_table';
 import {EASTERN_TIMEZONE, createQuakeTable} from './util';
 
+import {init} from './util';
+init();
+
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
