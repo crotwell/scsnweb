@@ -14,6 +14,7 @@ import {
 } from './maplayers';
 import {createMapAndTable} from './map_table';
 import {EASTERN_TIMEZONE, createQuakeTable} from './util';
+import {recentQuakeTimeDuration} from './scquakes';
 
 import {init} from './util';
 init();
@@ -32,7 +33,7 @@ app.innerHTML = `
   </p>
   <h3><a href="${import.meta.env.BASE_URL}research/index.html">Seismology Research at USC</a></h3>
   <p>Seismology research at USC, software and tools for seismology research.</p>
-  <h3>Recent Earthquakes near South Carolina, in the last month</h3>
+  <h3>Recent Earthquakes near South Carolina, ${recentQuakeTimeDuration.toHuman()}</h3>
 
     <div id='maptable' ></div>
   <dialog>
@@ -51,8 +52,7 @@ closeDialogButton.addEventListener("click", () => {
 });
 
 
-const oldQuakeTimeDuration = Duration.fromISO('P31D');
-const timeRange = Interval.before(DateTime.utc(), oldQuakeTimeDuration);
+const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 
 const quakeQuery = retrieveQuakeML();
 const chanQuery = retrieveStationXML();

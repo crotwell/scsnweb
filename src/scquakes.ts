@@ -19,11 +19,11 @@ init();
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
-const oldQuakeTimeDuration = Duration.fromISO('P3M');
+export const recentQuakeTimeDuration = Duration.fromISO('P3M');
 
 if (true) {
 app.innerHTML = `
-  <h3>Recent Earthquakes near South Carolina, ${oldQuakeTimeDuration.toHuman()}</h3>
+  <h3>Recent Earthquakes near South Carolina, ${recentQuakeTimeDuration.toHuman()}</h3>
 
   <div id='maptable' "></div>
 
@@ -43,7 +43,7 @@ closeDialogButton.addEventListener("click", () => {
 });
 
 
-const timeRange = Interval.before(DateTime.utc(), oldQuakeTimeDuration);
+const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 
 const quakeQuery = retrieveQuakeML();
 const chanQuery = retrieveStationXML();
