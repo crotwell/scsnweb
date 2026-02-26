@@ -1,18 +1,20 @@
 import './style.css'
+import './leaflet.css'
 
 import * as sp from 'seisplotjs';
 import "leaflet-polar-graticule";
 
 import {createPublicNavigation} from './navbar';
 import {
-  addGraticule,
+  basicSCMap,
+  addQuakesToMap,
+  addStationsToMap,
   historicEarthquakes, stateBoundaries,
-  WORLD_OCEAN, WORLD_OCEAN_ATTR
+  WORLD_OCEAN, WORLD_OCEAN_ATTR,
+  HISTORIC_URL, ANCIENT_URL
 } from './maplayers';
-import {init} from './util';
+import {init, EASTERN_TIMEZONE} from './util';
 init();
-
-export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -22,16 +24,9 @@ const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 if (true) {
 app.innerHTML = `
-  <sp-station-quake-map
-    class="large"
-    tileUrl='${BASE_TILE}'
-    tileAttribution='${BASE_TILE_ATTR}'
-    zoomLevel="7"
-    centerLat="33.5" centerLon="-81"
-    fitbounds="false">
-  </sp-station-quake-map>
-  <sp-quake-table>
-  </sp-quake-table>
+  <div id='map' width="300" height="300"></div>
+  <div id='table'>
+  </div>
   <dialog>
     <div>
     </div>
@@ -48,24 +43,15 @@ closeDialogButton.addEventListener("click", () => {
 });
 
 
-const quakeMap = document.querySelector("sp-station-quake-map") as sp.leafletutil.QuakeStationMap;
-if (!quakeMap) {throw new Error("Can't find sp-station-quake-map");}
+
+const quakeMap = basicSCMap(document.querySelector("#map"), 7);
 
 const hist_style = {
   color: "black",
   weight: 0.75,
   fillColor: "white"
 };
-const historicalLayer = historicEarthquakes(quakeMap, null, hist_style);
-
-quakeMap.onRedraw = () => {
-  addGraticule(quakeMap);
-};
-
-const stateBoundLayer = stateBoundaries(quakeMap);
-Promise.all([historicalLayer, stateBoundLayer]).then(()=> {
-  quakeMap.redraw();
-});
+historicEarthquakes(null, hist_style).then(historicalLayer => historicalLayer.addTo(quakeMap));
 
 const eqUrls = [
   ANCIENT_URL,
@@ -85,7 +71,7 @@ Promise.all(eqUrls.map( url => {
   return quakeList;
 }).then(quakeList => {
   let table = document.querySelector("sp-quake-table");
-  table.quakeList = quakeList;
+  if (table) {table.quakeList = quakeList;}
 }).catch( e => {
   console.log(e);
 });

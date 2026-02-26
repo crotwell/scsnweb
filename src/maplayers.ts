@@ -8,6 +8,8 @@ import {bestLatLonGradiculeIncrement} from './bestgraticule';
 
 export const STATE_BOUNDARY_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/state_lines.json"
 export const HATCHER_SC_GEOL = "http://www.seis.sc.edu/tilecache/Hatcher_SC_Geol/{z}/{x}/{y}.png"
+export const ANCIENT_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_historical.json"
+export const HISTORIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/sc_historical.json"
 
 export const HIST_QUAKES_GLOBAL_URL = "http://www.seis.sc.edu/tilecache/usgscatalog/{z}/{y}/{x}/"
 // Overlay layers (TMS)
@@ -16,7 +18,7 @@ export const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/
 export const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
 
-export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeRange?: Interval|null, style?: object ) {
+export function historicEarthquakes(timeRange?: Interval|null, style?: object ) {
   if (! style) {
     style = {
       color: "grey",
@@ -34,8 +36,9 @@ export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeR
         const qTime = DateTime.fromMillis(q.properties.time);
         return qTime < timeRange.start;
       });
-      eqMap.addGeoJsonLayer("Historic Earthquakes",
-                          hisGeoJson,
+      //L.geoJSON(jsondata, options).addTo(this.map);
+
+      return L.geoJSON(hisGeoJson,
                           {
                             pointToLayer: function(geoJsonPoint, latlng) {
                               let mag_radius = 3;
@@ -57,6 +60,7 @@ export function historicEarthquakes(eqMap: sp.leafletutil.QuakeStationMap, timeR
                             },
                             style: style
                           });
+
       return hisGeoJson;
     });
   return historicalLayer;
@@ -113,6 +117,9 @@ export interface StatesGeoJsonProperties {
 }
 
 export function basicSCMap(div: HTMLDivElement, zoom=10, center=[33.70, -80.75]) {
+  if (div == null) {
+    console.log(`basicSCMap() div is null`);
+  }
   const backgroundLayer = L.tileLayer(WORLD_OCEAN, {
   	maxZoom: 19,
   	attribution: WORLD_OCEAN_ATTR
@@ -123,6 +130,7 @@ export function basicSCMap(div: HTMLDivElement, zoom=10, center=[33.70, -80.75])
     layers: [backgroundLayer]
   });
   addGraticuleToMap(map);
+  stateBoundaries().then(boundary=>boundary.addTo(map));
   return map;
 }
 
