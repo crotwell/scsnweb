@@ -13,6 +13,7 @@ export default defineConfig({
         // public pages
         outreach: resolve(__dirname, 'outreach/index.html'),
         scquakes: resolve(__dirname, 'scquakes/index.html'),
+        seismogram: resolve(__dirname, 'seismogram/index.html'),
         heli: resolve(__dirname, 'helicorder/index.html'),
         historical: resolve(__dirname, 'historical/index.html'),
         global: resolve(__dirname, 'global/index.html'),

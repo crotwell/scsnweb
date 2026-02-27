@@ -52,6 +52,9 @@ const chanQuery = retrieveStationXML();
 Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   console.log(`qml len: ${qml.eventList.length}`)
   let [quakeMap, quakeTable] = createMapAndTable("#maptable", timeRange, qml.eventList, staxml);
+  quakeTable.addEventListener("quakeclick", (evt) => {
+    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+  });
   return Promise.all([qml, staxml, quakeMap, quakeTable]);
 }).then(([qml, staxml, quakeMap, quakeTable])=> {
   const others = new sp.fdsnstation.StationQuery();

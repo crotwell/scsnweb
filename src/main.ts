@@ -6,7 +6,7 @@ import {DateTime, Duration, Interval} from 'luxon';
 import "leaflet-polar-graticule";
 
 import {createPublicNavigation} from './navbar';
-import {retrieveStationXML, retrieveQuakeML} from './datastore';
+import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
 import {
   addGraticule,
   historicEarthquakes, stateBoundaries,
@@ -14,7 +14,6 @@ import {
 } from './maplayers';
 import {createMapAndTable} from './map_table';
 import {EASTERN_TIMEZONE, createQuakeTable} from './util';
-import {recentQuakeTimeDuration} from './scquakes';
 
 import {init} from './util';
 init();
@@ -39,7 +38,7 @@ app.innerHTML = `
     <p>Seismology research at USC, software and tools for seismology research.</p>
   </div>
 </div>
-  <h3>Recent Earthquakes near South Carolina, ${recentQuakeTimeDuration.toHuman()}</h3>
+  <h3>Recent Earthquakes near South Carolina, (1 week)</h3>
 
     <div id='maptable' ></div>
   <dialog>
@@ -58,20 +57,23 @@ closeDialogButton.addEventListener("click", () => {
 });
 
 
-const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
+const timeRange = Interval.before(DateTime.utc(), Duration.fromISO("P1W"));
 
-const quakeQuery = retrieveQuakeML();
+const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
-Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
-  console.log(`qml len: ${qml.eventList.length}`)
-  createMapAndTable("#maptable", timeRange, qml.eventList, staxml);
-  return [qml, staxml];
-}).then( ([qml, staxml]) => {
+Promise.all([ quakeQuery, chanQuery ]).then( ([quakeList, staxml]) => {
+  console.log(`main qml len: ${quakeList.length}`)
+  let [map, table] = createMapAndTable("#maptable", timeRange, quakeList, staxml);
+  table.addEventListener("quakeclick", (evt) => {
+    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+  });
+  return [quakeList, staxml];
+}).then( ([quakeList, staxml]) => {
 
   const historicalLayer = null; //historicEarthquakes(quakeMap, timeRange);
   const tectonicSummaryLayer = null; //tectonicSummary(quakeMap);
   const stateBoundLayer = null; //stateBoundaries(quakeMap);
-  return Promise.all([qml, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer])
+  return Promise.all([quakeList, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer])
     .then( () => {
       console.log("Promise  for map done")
     });

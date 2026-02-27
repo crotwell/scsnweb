@@ -67,6 +67,9 @@ retrieveHistoric().then(quakeList => {
   const markers = addQuakesToMap(map, swarmQuakes);
   console.log(`Swarm earthquakes: ${swarmQuakes.length}`);
   const quakeTable = createQuakeTable(swarmQuakes);
+  quakeTable.addEventListener("quakeclick", (evt) => {
+    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+  });
   const tableDiv = document.querySelector<HTMLDivElement>('#table')!;
   tableDiv.appendChild(quakeTable);
   quakeTable.draw();

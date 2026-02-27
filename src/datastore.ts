@@ -65,6 +65,39 @@ export function loadStations(): Promise<Array<sp.stationxml.Station>> {
   }
 }
 
+
+const sc_minlat = 32.0;
+const sc_maxlat = 35.25;
+const sc_minlon = -83.5;
+const sc_maxlon = -78.4;
+
+export function quakeById(eventId: string): Promise<sp.quakeml.Quake> {
+  return sp.quakeml.fetchQuakeML(`https://eeyore.seis.sc.edu/scsn/sc_quakes/by_eventid/eventid_${eventId}`)
+  .then((qml) => {
+      if (qml.eventList.length !== 0) {
+        return qml.eventList[0];
+      } else {
+        return sp.fdsnevent.EventQuery().eventId(eventId).query()
+        .then((qml) => {
+            if (qml.eventList.length !== 0) {
+              return qml.eventList[0];
+            } else {
+              return null;
+            }
+        });
+      }
+    });
+}
+
+export function retrieveSCQuakesWeek(): Promise<sp.quakeml.EventParameters> {
+  return sp.usgsgeojson.loadWeekSummaryAll()
+  .then((quakeList: Array<Quake>) => {
+    return quakeList.filter( q => {
+      return sc_minlat <= q.latitude && q.latitude <= sc_maxlat
+        && sc_minlon <= q.longitude && q.longitude <= sc_maxlon;
+    });
+  });
+}
 export function retrieveQuakeML(): Promise<sp.quakeml.EventParameters> {
   return sp.quakeml.fetchQuakeML(SC_QUAKE_URL);
 }
@@ -83,7 +116,8 @@ export function retrieveGlobalSignificant(timeRange?: Interval): Promise<sp.quak
   }
   if (timeRange.isValid && timeRange.start?.isValid && timeRange.end?.isValid) {
     const usgsSignificantUrl = `https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?starttime=${timeRange.start.toISO()}&endtime=${timeRange.end.toISO()}&minsig=600&orderby=time`
-    return sp.usgsgeojson.loadRawUSGSGeoJsonSummary(usgsSignificantUrl).then((geojson: sp.usgsgeojson.USGSGeoJsonSummary) => {
+    return sp.usgsgeojson.loadRawUSGSGeoJsonSummary(usgsSignificantUrl)
+    .then((geojson: sp.usgsgeojson.USGSGeoJsonSummary) => {
       return sp.usgsgeojson.parseGeoJSON(geojson);
     });
   } else {
