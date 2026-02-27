@@ -113,6 +113,36 @@ sp-station-quake-map.large {
   display: block;
 }
 
+div.publicresearch {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+div.publicresearch div {
+  width: 45%;
+  display: flex;
+  flex-direction: row;
+}
+
+div.publicresearch div p {
+  margin: 10px;
+}
+
+a.bigbutton {
+  display: inline-block;
+  color: white;
+  border: 1px solid #73000a;
+
+  background-color: #73000a;
+  box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+  cursor: pointer;
+  vertical-align: middle;
+  max-width: 100px;
+  padding: 5px;
+  text-align: center;
+  font-family: 'Berlingske Serif', 'Georgia', serif;
+}
 
 
 a {
