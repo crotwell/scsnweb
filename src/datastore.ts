@@ -73,20 +73,18 @@ const sc_maxlon = -78.4;
 
 export function quakeById(eventId: string): Promise<sp.quakeml.Quake> {
   return sp.quakeml.fetchQuakeML(`https://eeyore.seis.sc.edu/scsn/sc_quakes/by_eventid/eventid_${eventId}`)
+  .catch(err => {
+    // not from SCSN, so try USGS
+    const query = new sp.fdsnevent.EventQuery().eventId(eventId);
+    return query.queryEventParameters();
+  })
   .then((qml) => {
-      if (qml.eventList.length !== 0) {
-        return qml.eventList[0];
-      } else {
-        return sp.fdsnevent.EventQuery().eventId(eventId).query()
-        .then((qml) => {
-            if (qml.eventList.length !== 0) {
-              return qml.eventList[0];
-            } else {
-              return null;
-            }
-        });
-      }
-    });
+    if (qml.eventList.length !== 0) {
+      return qml.eventList[0];
+    } else {
+      return null;
+    }
+  });
 }
 
 export function retrieveSCQuakesWeek(): Promise<sp.quakeml.EventParameters> {

@@ -116,7 +116,6 @@ retrieveStationXML()
     });
     return Promise.all([staxml]);
   });
-  map.redraw();
 }).then( () => {
   console.log("Promise  for map done")
 });

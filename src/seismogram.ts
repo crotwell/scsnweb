@@ -64,10 +64,20 @@ Promise.all([quakeById(eventid), retrieveStationXML()])
           sta.channels = sta.channels.filter(c => c.channelCode[1]==='H');
         }
       });
-    })
+    });
     const loader = new sp.seismogramloader.SeismogramLoader(filteredStaxml, [quake]);
+    if (sp.distaz.distaz(quake.latitude, quake.longitude, 34, -81).distanceDeg>2) {
+      // not a SC event, better time params
+      loader.endOffsetSeconds(600);
+      loader.markedPhaseList=["PP", "SS", "PKP"];
+    }
     return loader.load();
   }).then((dataset: sp.dataset.Datset) => {
-    dataset.waveforms.forEach( sdd => {sdd.alignmentTime = dataset.catalog[0].time;});
+    const quake = dataset.catalog[0];
+    if (sp.distaz.distaz(quake.latitude, quake.longitude, 34, -81).distanceDeg>2) {
+      // not a SC event, better time params
+    } else {
+      dataset.waveforms.forEach( sdd => {sdd.alignmentTime = quake.time;});
+    }
     document.querySelector(sp.organizeddisplay.ORG_DISPLAY).seisData = dataset.waveforms;
   });

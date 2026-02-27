@@ -19,9 +19,6 @@ init();
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
-const BASE_TILE = WORLD_OCEAN;
-const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
-
 if (true) {
 app.innerHTML = `
   <div id='map' width="300" height="300"></div>

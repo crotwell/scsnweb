@@ -17,6 +17,7 @@ export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 export function createQuakeTable(quakes: Array<sp.quakeml.Quake>) {
     let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
     colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
+    //colDefaultLabels.set(sp.infotable.QUAKE_COLUMN.EVENTID, "EventId");
     let colLabels = new Map();
     colLabels.set(sp.infotable.QUAKE_COLUMN.LOCALTIME, "Time (Eastern)");
     for (let k of colDefaultLabels.keys()) {

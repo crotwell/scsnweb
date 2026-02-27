@@ -15,6 +15,7 @@ export function createMapAndTable(divSelector: string = "map",
     timeRange: Interval,
     quakeList: Array<sp.quakeml.Quake>,
     networkList: Array<s.stationxml.Network>,
+    zoomLevel=7
 ) {
   const outerDiv = document.querySelector(divSelector);
   outerDiv.innerHTML = `
@@ -23,7 +24,7 @@ export function createMapAndTable(divSelector: string = "map",
 
   `;
 
-  const quakeMap = basicSCMap(outerDiv.querySelector("#map"), 7);
+  const quakeMap = basicSCMap(outerDiv.querySelector("#map"), zoomLevel);
   const quakesInTime = quakeList.filter(q => {
     return timeRange.start <= q.time && q.time <= timeRange.end;
   });

@@ -26,7 +26,7 @@ if (true) {
 app.innerHTML = `
   <h3>Recent Earthquakes near South Carolina, ${recentQuakeTimeDuration.toHuman()}</h3>
 
-  <div id='maptable' "></div>
+  <div id="maptable"></div>
 
   <dialog>
     <div>
