@@ -85,6 +85,10 @@ sp-station-quake-map.large {
   height: 800px;
 }
 
+.stationMapMarker.otherstation {
+  color: darkgrey;
+}
+
 .leaflet-container {
 	height: 400px;
 	width: 600px;

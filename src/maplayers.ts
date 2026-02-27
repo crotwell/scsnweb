@@ -142,10 +142,10 @@ export function addQuakesToMap(map, quakeList): Array<L.Marker> {
   return markers;
 }
 
-export function addStationsToMap(map, stationList): Array<L.Marker> {
+export function addStationsToMap(map, stationList, classList?: Array<string>): Array<L.Marker> {
   const markers = [];
   stationList.forEach(sta => {
-    const marker = sp.leafletutil.createStationMarker(sta);
+    const marker = sp.leafletutil.createStationMarker(sta, classList);
     markers.push(marker);
     marker.addEventListener("click", (evt) => {
       const ce = sp.stationxml.createStationClickEvent(sta, evt.originalEvent);
