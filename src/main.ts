@@ -27,12 +27,18 @@ const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 if (true) {
 app.innerHTML = `
-  <h3><a href="${import.meta.env.BASE_URL}outreach/index.html">Information for the Public</a></h3>
+<div>
+<span>
+  <h3 class="bigbutton"><a href="${import.meta.env.BASE_URL}outreach/index.html">Information for the Public</a></h3>
   <p>Recent earthquakes in South Carolina, historical seismicity and
     access to current data from the South Carolina Seismic Network.
   </p>
-  <h3><a href="${import.meta.env.BASE_URL}research/index.html">Seismology Research at USC</a></h3>
+  </span>
+  <span>
+  <h3 class="bigbutton"><a href="${import.meta.env.BASE_URL}research/index.html">Seismology Research at USC</a></h3>
   <p>Seismology research at USC, software and tools for seismology research.</p>
+</span>
+</div>
   <h3>Recent Earthquakes near South Carolina, ${recentQuakeTimeDuration.toHuman()}</h3>
 
     <div id='maptable' ></div>

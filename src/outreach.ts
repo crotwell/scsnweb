@@ -20,7 +20,7 @@ app.innerHTML = `
 </p>
 <h3>Where have earthquakes happened in South Carolina?</h3>
 <p>
-  The patterns of <a href="historical">historical seismicity</a>
+  The patterns of <a href="${import.meta.env.BASE_URL}historical">historical seismicity</a>
   in South Carolina are quite varied.
 
 </p>
