@@ -2,18 +2,14 @@ import './style.css'
 import './leaflet.css'
 
 import * as sp from 'seisplotjs';
-import "leaflet-polar-graticule";
 
 import {createPublicNavigation} from './navbar';
 import {
   basicSCMap,
-  addQuakesToMap,
-  addStationsToMap,
-  historicEarthquakes, stateBoundaries,
-  WORLD_OCEAN, WORLD_OCEAN_ATTR,
+  historicEarthquakes,
   HISTORIC_URL, ANCIENT_URL
 } from './maplayers';
-import {init, EASTERN_TIMEZONE} from './util';
+import {init} from './util';
 init();
 
 createPublicNavigation();
@@ -63,7 +59,7 @@ Promise.all(eqUrls.map( url => {
       });
     })
 ).then((qmlList) => {
-  let quakeList = [];
+  let quakeList: Array<sp.quakeml.Quake> = [];
   qmlList.forEach( qmlEvents => quakeList = quakeList.concat(qmlEvents));
   return quakeList;
 }).then(quakeList => {

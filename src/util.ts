@@ -14,7 +14,7 @@ export function init() {
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
 
 
-export function createQuakeTable(quakes: Array<sp.quakeml.Quake>) {
+export function createQuakeTable(quakes: Array<sp.quakeml.Quake>): sp.infotable.QuakeTable {
     let colDefaultLabels = sp.infotable.QuakeTable.createDefaultColumnLabels();
     colDefaultLabels.delete(sp.infotable.QUAKE_COLUMN.TIME);
     //colDefaultLabels.set(sp.infotable.QUAKE_COLUMN.EVENTID, "EventId");

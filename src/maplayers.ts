@@ -116,7 +116,9 @@ export interface StatesGeoJsonProperties {
   CENSUSAREA: string;
 }
 
-export function basicSCMap(div: HTMLDivElement, zoom=10, center=[33.70, -80.75]) {
+export function basicSCMap(div: HTMLDivElement,
+    zoom=10,
+    center=[33.70, -80.75]): L.map {
   if (div == null) {
     console.log(`basicSCMap() div is null`);
   }
@@ -194,12 +196,14 @@ export function addGraticuleToMap(map: sp.leafletutil.QuakeStationMap, style?: o
     };
   }
   const intervalLatLng = bestLatLonGradiculeIncrement(map.getBounds());
-  L.graticule({
-      sphere: true,
-      style: style,
-      intervalLat: intervalLatLng[0],
-      intervalLng: intervalLatLng[1],
-      centerLonLabels: true ,
-      lngBounds:[-180,181] ,
-  }).addTo(map);
+  if (L.graticule) {
+    L.graticule({
+        sphere: true,
+        style: style,
+        intervalLat: intervalLatLng[0],
+        intervalLng: intervalLatLng[1],
+        centerLonLabels: true ,
+        lngBounds:[-180,181] ,
+    }).addTo(map);
+  }
 }

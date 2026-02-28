@@ -2,20 +2,14 @@ import './style.css'
 import './leaflet.css'
 
 import * as sp from 'seisplotjs';
-import * as L from 'leaflet';
-import "leaflet-polar-graticule";
 import {DateTime} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
 import {
   basicSCMap,
   addQuakesToMap,
-  addStationsToMap,
-  addGraticuleToMap,
-  historicEarthquakes, stateBoundaries
 } from './maplayers';
 import {retrieveHistoric} from './datastore';
-import {WORLD_OCEAN, WORLD_OCEAN_ATTR} from './maplayers';
 import {createQuakeTable} from './util';
 import {init} from './util';
 init();
@@ -55,7 +49,7 @@ retrieveHistoric().then(quakeList => {
   return quakeList.filter(q => {
     const origin = q.preferredOrigin;
 
-    return (     origin.time > swarmStart &&
+    return (origin!=null && origin.time > swarmStart &&
       minlat < origin.latitude && origin.latitude < maxlat &&
       minlon < origin.longitude && origin.longitude < maxlon);
 
@@ -64,11 +58,11 @@ retrieveHistoric().then(quakeList => {
   document.querySelector("#numquakes").textContent = swarmQuakes.length;
   return swarmQuakes;
 }).then(swarmQuakes => {
-  const markers = addQuakesToMap(map, swarmQuakes);
+  addQuakesToMap(map, swarmQuakes);
   console.log(`Swarm earthquakes: ${swarmQuakes.length}`);
   const quakeTable = createQuakeTable(swarmQuakes);
-  quakeTable.addEventListener("quakeclick", (evt) => {
-    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+  quakeTable.addEventListener("quakeclick", (evt: CustomEvent<sp.quakeml.Quake>) => {
+    window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
   const tableDiv = document.querySelector<HTMLDivElement>('#table')!;
   tableDiv.appendChild(quakeTable);

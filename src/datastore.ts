@@ -71,9 +71,9 @@ const sc_maxlat = 35.25;
 const sc_minlon = -83.5;
 const sc_maxlon = -78.4;
 
-export function quakeById(eventId: string): Promise<sp.quakeml.Quake> {
+export function quakeById(eventId: string): Promise<sp.quakeml.Quake|null> {
   return sp.quakeml.fetchQuakeML(`https://eeyore.seis.sc.edu/scsn/sc_quakes/by_eventid/eventid_${eventId}`)
-  .catch(err => {
+  .catch(_err => {
     // not from SCSN, so try USGS
     const query = new sp.fdsnevent.EventQuery().eventId(eventId);
     return query.queryEventParameters();
@@ -87,9 +87,9 @@ export function quakeById(eventId: string): Promise<sp.quakeml.Quake> {
   });
 }
 
-export function retrieveSCQuakesWeek(): Promise<sp.quakeml.EventParameters> {
+export function retrieveSCQuakesWeek(): Promise<Array<sp.quakeml.Quake>> {
   return sp.usgsgeojson.loadWeekSummaryAll()
-  .then((quakeList: Array<Quake>) => {
+  .then((quakeList: Array<sp.quakeml.Quake>) => {
     return quakeList.filter( q => {
       return sc_minlat <= q.latitude && q.latitude <= sc_maxlat
         && sc_minlon <= q.longitude && q.longitude <= sc_maxlon;

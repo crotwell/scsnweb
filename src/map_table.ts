@@ -5,8 +5,6 @@ import {
   basicSCMap,
   addQuakesToMap,
   addStationsToMap,
-  historicEarthquakes, stateBoundaries,
-  WORLD_OCEAN, WORLD_OCEAN_ATTR
 } from './maplayers';
 import {createQuakeTable} from './util';
 
@@ -16,7 +14,7 @@ export function createMapAndTable(divSelector: string = "map",
     quakeList: Array<sp.quakeml.Quake>,
     networkList: Array<s.stationxml.Network>,
     zoomLevel=7
-) {
+): Promise([sp.infotable.QuakeTable, L.map]) {
   const outerDiv = document.querySelector(divSelector);
   outerDiv.innerHTML = `
     <div id="map"></div>

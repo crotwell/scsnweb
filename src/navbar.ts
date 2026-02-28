@@ -1,6 +1,5 @@
 
 import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
-import seoeLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 
 let navHeader = `
 <header>

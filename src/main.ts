@@ -1,28 +1,17 @@
 import './style.css'
 import './leaflet.css'
 
-import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
-import "leaflet-polar-graticule";
 
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
-import {
-  addGraticule,
-  historicEarthquakes, stateBoundaries,
-  WORLD_OCEAN, WORLD_OCEAN_ATTR
-} from './maplayers';
 import {createMapAndTable} from './map_table';
-import {EASTERN_TIMEZONE, createQuakeTable} from './util';
 
 import {init} from './util';
 init();
 
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
-
-const BASE_TILE = WORLD_OCEAN;
-const BASE_TILE_ATTR = WORLD_OCEAN_ATTR;
 
 if (true) {
 app.innerHTML = `

@@ -3,16 +3,13 @@ import './leaflet.css'
 
 import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
-import "leaflet-polar-graticule";
 
 import {createMapAndTable} from './map_table';
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
   addStationsToMap,
-  historicEarthquakes, stateBoundaries,
 } from './maplayers';
-import {createQuakeTable} from './util';
 
 import {init} from './util';
 init();
@@ -53,7 +50,7 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   console.log(`qml len: ${qml.eventList.length}`)
   let [quakeMap, quakeTable] = createMapAndTable("#maptable", timeRange, qml.eventList, staxml);
   quakeTable.addEventListener("quakeclick", (evt) => {
-    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+    window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
   return Promise.all([qml, staxml, quakeMap, quakeTable]);
 }).then(([qml, staxml, quakeMap, quakeTable])=> {
@@ -65,9 +62,9 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
 }).then(([qml, staxml, quakeMap, quakeTable, otherstaxml]) => {
   console.log(`otherstaxml: ${otherstaxml.length}`)
   const otherClassList = ["otherstation"];
-  otherstaxml.forEach(net=> {
+  otherstaxml.forEach((net: sp.stationxml.Network) => {
     if (net.networkCode !== "CO") {
-      const markerList = addStationsToMap(quakeMap, net.stations, otherClassList);
+      addStationsToMap(quakeMap, net.stations, otherClassList);
     }
   });
 });

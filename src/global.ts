@@ -7,14 +7,8 @@ import {DateTime, Duration, Interval} from 'luxon';
 import {createMapAndTable} from './map_table';
 
 import {createPublicNavigation} from './navbar';
-import {retrieveStationXML, retrieveGlobalSignificant, seismometerChannels} from './datastore';
-import {
-  basicSCMap,
-  addQuakesToMap,
-  addStationsToMap,
-  historicEarthquakes, stateBoundaries,
-} from './maplayers';
-import {init, createQuakeTable} from './util';
+import {retrieveStationXML } from './datastore';
+import {init} from './util';
 init();
 
 createPublicNavigation();
@@ -58,7 +52,7 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([quakeList, staxml]) => {
   console.log(`qml len: ${quakeList.length}`)
   let [quakeMap, quakeTable] = createMapAndTable("#maptable", timeRange, quakeList, staxml, 1);
   quakeTable.addEventListener("quakeclick", (evt) => {
-    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+    window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
   return Promise.all([quakeList, staxml, quakeMap, quakeTable]);
 });
