@@ -67,7 +67,7 @@ Promise.all([quakeById(eventid), retrieveStationXML()])
     if (sp.distaz.distaz(quake.latitude, quake.longitude, 34, -81).distanceDeg>2) {
       // not a SC event, better time params
       loader.endOffsetSeconds(600);
-      loader.markedPhaseList=["PP", "SS", "PKP"];
+      loader.markedPhaseList=["pP", "PP", "SS", "PKP"];
     }
     return loader.load();
   }).then((dataset: sp.dataset.Dataset) => {

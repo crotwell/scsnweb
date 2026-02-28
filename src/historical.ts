@@ -64,10 +64,11 @@ Promise.all(eqUrls.map( url => {
   return quakeList;
 }).then(quakeList => {
   let table = document.querySelector("sp-quake-table");
-  if (table) {table.quakeList = quakeList;}
-  table.addEventListener("quakeclick", (evt) => {
-    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
-  });
+  if (table) {table.quakeList = quakeList;
+    table.addEventListener("quakeclick", (evt) => {
+      window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+    });
+  }
 }).catch( e => {
   console.log(e);
 });

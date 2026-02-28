@@ -5,6 +5,7 @@ import {
   basicSCMap,
   addQuakesToMap,
   addStationsToMap,
+  stateBoundaries
 } from './maplayers';
 import {createQuakeTable} from './util';
 
@@ -12,9 +13,9 @@ import {createQuakeTable} from './util';
 export function createMapAndTable(divSelector: string = "map",
     timeRange: Interval,
     quakeList: Array<sp.quakeml.Quake>,
-    networkList: Array<s.stationxml.Network>,
+    networkList: Array<sp.stationxml.Network>,
     zoomLevel=7
-): Promise([sp.infotable.QuakeTable, L.map]) {
+): [sp.infotable.QuakeTable, L.map] {
   const outerDiv = document.querySelector(divSelector);
   outerDiv.innerHTML = `
     <div id="map"></div>
@@ -31,5 +32,6 @@ export function createMapAndTable(divSelector: string = "map",
   quakeTable.draw();
   addQuakesToMap(quakeMap, quakesInTime);
   networkList.forEach(n => addStationsToMap(quakeMap, n.stations));
+
   return [quakeMap, quakeTable];
 }

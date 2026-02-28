@@ -5,6 +5,7 @@ import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMapAndTable} from './map_table';
+import {stateBoundaries} from './maplayers';
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
@@ -58,8 +59,13 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
   others.latitude(33.7).longitude(-80.7).maxRadius(2)
     .startTime(sp.util.isoToDateTime("now"))
     .channelCode("HH?,BH?,HN?");
-  return Promise.all([qml, staxml, quakeMap, quakeTable, others.queryStations()]);
-}).then(([qml, staxml, quakeMap, quakeTable, otherstaxml]) => {
+
+  const stateBound = stateBoundaries().then(boundary=>{
+    boundary.addTo(quakeMap);
+    return quakeMap;
+  });
+  return Promise.all([qml, staxml, quakeMap, quakeTable, others.queryStations(), stateBound]);
+}).then(([qml, staxml, quakeMap, quakeTable, otherstaxml, stateBound]) => {
   console.log(`otherstaxml: ${otherstaxml.length}`)
   const otherClassList = ["otherstation"];
   otherstaxml.forEach((net: sp.stationxml.Network) => {
