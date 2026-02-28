@@ -132,7 +132,6 @@ export function basicSCMap(div: HTMLDivElement,
     layers: [backgroundLayer]
   });
   addGraticuleToMap(map);
-  stateBoundaries().then(boundary=>boundary.addTo(map));
   return map;
 }
 
