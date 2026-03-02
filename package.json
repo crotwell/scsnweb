@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "buildtsc": "tsc && vite build  --base=/scsn/scsnweb/",
-    "build": "vite build  --base=/scsn/scsnweb/",
+    "buildtsc": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "tsc": "tsc --project tsconfig.json"
   },
