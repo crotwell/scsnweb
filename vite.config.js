@@ -16,6 +16,7 @@ export default defineConfig({
         seismogram: resolve(__dirname, 'seismogram/index.html'),
         heli: resolve(__dirname, 'helicorder/index.html'),
         historical: resolve(__dirname, 'historical/index.html'),
+        elginswarm: resolve(__dirname, 'historical/elginswarm.html'),
         global: resolve(__dirname, 'global/index.html'),
         about: resolve(__dirname, 'about/index.html'),
         // research pages
