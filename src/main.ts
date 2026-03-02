@@ -47,23 +47,9 @@ closeDialogButton.addEventListener("click", () => {
 
 
 const timeRange = Interval.before(DateTime.utc(), Duration.fromISO("P1W"));
-
 const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
-Promise.all([ quakeQuery, chanQuery ]).then( ([quakeList, staxml]) => {
-  console.log(`main qml len: ${quakeList.length}`)
-  let [map, table] = createMapAndTable("#maptable", timeRange, quakeList, staxml);
-  table.addEventListener("quakeclick", (evt) => {
-    window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
-  });
-  return [quakeList, staxml];
-}).then( ([quakeList, staxml]) => {
-
-  const historicalLayer = null; //historicEarthquakes(quakeMap, timeRange);
-  const tectonicSummaryLayer = null; //tectonicSummary(quakeMap);
-  const stateBoundLayer = null; //stateBoundaries(quakeMap);
-  return Promise.all([quakeList, staxml, stateBoundLayer, tectonicSummaryLayer, historicalLayer])
-    .then( () => {
-      console.log("Promise  for map done")
-    });
+createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
+.then(([map, table]) => {
+  console.log("main done map,table")
 });

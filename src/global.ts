@@ -48,16 +48,11 @@ const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 const quakeQuery = sp.usgsgeojson.loadMonthSummarySignificant();
 const chanQuery = retrieveStationXML();
 
-Promise.all([ quakeQuery, chanQuery ]).then( ([quakeList, staxml]) => {
-  console.log(`qml len: ${quakeList.length}`)
-  let [quakeMap, quakeTable] = createMapAndTable("#maptable", timeRange, quakeList, staxml, 1);
-  quakeTable.addEventListener("quakeclick", (evt) => {
-    window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
-  });
-
+createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery, 1)
+.then(([quakeMap, quakeTable])=> {
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);
     return quakeMap;
   });
-  return Promise.all([quakeList, staxml, quakeMap, quakeTable, stateBound]);
+  return Promise.all([quakeMap, quakeTable, stateBound]);
 });

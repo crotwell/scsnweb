@@ -44,17 +44,10 @@ closeDialogButton.addEventListener("click", () => {
 
 const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 
-const quakeQuery = retrieveQuakeML();
+const quakeQuery = retrieveQuakeML().then(qml => qml.eventList);
 const chanQuery = retrieveStationXML();
-
-Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
-  console.log(`qml len: ${qml.eventList.length}`)
-  let [quakeMap, quakeTable] = createMapAndTable("#maptable", timeRange, qml.eventList, staxml);
-  quakeTable.addEventListener("quakeclick", (evt) => {
-    window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
-  });
-  return Promise.all([qml, staxml, quakeMap, quakeTable]);
-}).then(([qml, staxml, quakeMap, quakeTable])=> {
+createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
+.then(([quakeMap, quakeTable]) => {
   const others = new sp.fdsnstation.StationQuery();
   others.latitude(33.7).longitude(-80.7).maxRadius(2)
     .startTime(sp.util.isoToDateTime("now"))
@@ -64,8 +57,8 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
     boundary.addTo(quakeMap);
     return quakeMap;
   });
-  return Promise.all([qml, staxml, quakeMap, quakeTable, others.queryStations(), stateBound]);
-}).then(([qml, staxml, quakeMap, quakeTable, otherstaxml, stateBound]) => {
+  return Promise.all([quakeMap, quakeTable, others.queryStations(), stateBound]);
+}).then(([quakeMap, quakeTable, otherstaxml, stateBound]) => {
   console.log(`otherstaxml: ${otherstaxml.length}`)
   const otherClassList = ["otherstation"];
   otherstaxml.forEach((net: sp.stationxml.Network) => {
@@ -73,4 +66,5 @@ Promise.all([ quakeQuery, chanQuery ]).then( ([qml, staxml]) => {
       addStationsToMap(quakeMap, net.stations, otherClassList);
     }
   });
+  return Promise.all([quakeMap, quakeTable, otherstaxml, stateBound]);
 });

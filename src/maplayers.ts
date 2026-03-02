@@ -87,7 +87,7 @@ function tooltipper(feature: GeoJSON.Feature, layer: L.Layer) {
   });
 };
 
-export function tectonicSummary(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
+export function tectonicSummary(eqMap: L.Map, style?: object) {
   if (! style) {
     style = {
       color: "blue",
@@ -97,12 +97,11 @@ export function tectonicSummary(eqMap: sp.leafletutil.QuakeStationMap, style?: o
   }
   return sp.usgsgeojson.loadUSGSTectonicLayer(TECTONIC_URL)
   .then((tecGeoJson: sp.usgsgeojson.USGSTectonicGeoJsonSummary) => {
-    eqMap.addGeoJsonLayer("Tectonic Regions",
-                        tecGeoJson.tectonic,
-                        {
-                          onEachFeature: tooltipper,
-                          style: style
-                        });
+    L.geoJSON(tecGeoJson.tectonic,
+    {
+      onEachFeature: tooltipper,
+      style: style
+    }).addTo(eqMap);
     return tecGeoJson;
   });
 }
@@ -117,8 +116,8 @@ export interface StatesGeoJsonProperties {
 }
 
 export function basicSCMap(div: HTMLDivElement,
-    zoom=10,
-    center=[33.70, -80.75]): L.map {
+    zoom: number=10,
+    center: L.LatLngExpression =[33.70, -80.75]): L.Map {
   if (div == null) {
     console.log(`basicSCMap() div is null`);
   }
@@ -131,20 +130,20 @@ export function basicSCMap(div: HTMLDivElement,
     zoom: zoom,
     layers: [backgroundLayer]
   });
-  addGraticuleToMap(map);
+  //addGraticuleToMap(map);
   return map;
 }
 
-export function addQuakesToMap(map, quakeList): Array<L.Marker> {
-  const markers = [];
+export function addQuakesToMap(map: L.Map, quakeList: Array<sp.quakeml.Quake>): Array<L.CircleMarker> {
+  const markers: Array<L.CircleMarker> = [];
   quakeList.forEach(q => {markers.push(sp.leafletutil.createQuakeMarker(q))});
   const quakeLayer = L.layerGroup(markers);
   map.addLayer(quakeLayer);
   return markers;
 }
 
-export function addStationsToMap(map, stationList, classList?: Array<string>): Array<L.Marker> {
-  const markers = [];
+export function addStationsToMap(map: L.Map, stationList: Array<sp.stationxml.Station>, classList?: Array<string>): Array<L.Marker> {
+  const markers: Array<L.Marker> = [];
   stationList.forEach(sta => {
     const marker = sp.leafletutil.createStationMarker(sta, classList);
     markers.push(marker);
@@ -182,11 +181,7 @@ export function stateBoundaries(style?: object) {
 }
 
 
-export function addGraticule(eqMap: sp.leafletutil.QuakeStationMap, style?: object) {
-  if (!map) {throw new Error("map missing on QuakeStationMap");}
-  addGraticuleToMap(eqMap.map, style);
-}
-export function addGraticuleToMap(map: sp.leafletutil.QuakeStationMap, style?: object) {
+export function addGraticuleToMap(map: L.Map, style?: object) {
   if (!style) {
     style = {
         color: '#777',
