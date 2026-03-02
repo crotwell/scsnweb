@@ -2,11 +2,14 @@ import './style.css'
 import './leaflet.css'
 
 import * as sp from 'seisplotjs';
-
+import {DateTime, Duration, Interval} from 'luxon';
+import {retrieveQuakeML} from './datastore';
 import {createPublicNavigation} from './navbar';
 import {
   basicSCMap,
+  addQuakesToMap,
   historicEarthquakes,
+  stateBoundaries,
   HISTORIC_URL, ANCIENT_URL
 } from './maplayers';
 import {init} from './util';
@@ -44,32 +47,24 @@ const hist_style = {
   weight: 0.75,
   fillColor: "white"
 };
-historicEarthquakes(null, hist_style).then(historicalLayer => historicalLayer.addTo(quakeMap));
+const timeRange = Interval.before(DateTime.utc(), Duration.fromISO('P1MT1S'));
+historicEarthquakes(timeRange, hist_style)
+.then(historicalLayer => historicalLayer.addTo(quakeMap))
+.then(() => {
+  return retrieveQuakeML().then(qml => {
+    const monthQuakes = qml.eventList.filter(q => timeRange.contains(q.time));
+    addQuakesToMap(quakeMap, monthQuakes);
+    return qml;
+  })
+}).then(() => {
+  return stateBoundaries().then(boundary=>{
+    boundary.addTo(quakeMap);
+    return quakeMap;
+  });
+});
 
 const eqUrls = [
-  ANCIENT_URL,
-  HISTORIC_URL
+  //ANCIENT_URL,
+  HISTORIC_URL,
+
 ];
-Promise.all(eqUrls.map( url => {
-  return sp.usgsgeojson.loadUSGSGeoJsonSummary(url)
-    .then( qml => {
-      return qml.eventList.filter(q => {
-          return q?.magnitude && q.magnitude.mag > 3;
-        });
-      });
-    })
-).then((qmlList) => {
-  let quakeList: Array<sp.quakeml.Quake> = [];
-  qmlList.forEach( qmlEvents => quakeList = quakeList.concat(qmlEvents));
-  return quakeList;
-}).then(quakeList => {
-  let table = document.querySelector("sp-quake-table") as sp.infotable.QuakeTable;
-  if (table) {
-    table.quakeList = quakeList;
-    table.addEventListener("quakeclick", (evt) => {
-      window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
-    });
-  }
-}).catch( e => {
-  console.log(e);
-});
