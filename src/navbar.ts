@@ -17,6 +17,14 @@ let navHeader = `
 </header>
 `;
 
+let navMain = `
+<nav class="sidebar">
+  <ul>
+    <li><a href="${import.meta.env.BASE_URL}outreach/index.html">Public</a></li>
+    <li><a href="${import.meta.env.BASE_URL}research/index.html">Research</a></li>
+  </ul>
+</nav>
+`;
 let navPublic = `
 <nav class="sidebar">
   <ul>
@@ -38,6 +46,17 @@ let navResearch = `
   </ul>
 </nav>
 `;
+
+export function createMainNavigation() {
+  const navDiv = document.querySelector<HTMLDivElement>('#head')!
+  if (navDiv) {
+    navDiv.innerHTML = navHeader;
+  }
+  const innerNav = document.querySelector<HTMLDivElement>('#nav')!
+  if (innerNav) {
+    innerNav.innerHTML = navMain;
+  }
+}
 
 export function createPublicNavigation() {
   const navDiv = document.querySelector<HTMLDivElement>('#head')!

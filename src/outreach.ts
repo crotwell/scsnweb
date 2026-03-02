@@ -1,5 +1,9 @@
 import './style.css'
 import {createPublicNavigation} from './navbar';
+import {DateTime, Duration, Interval} from 'luxon';
+import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
+import {createMapAndTable} from './map_table';
+import {stateBoundaries} from './maplayers';
 
 import {init} from './util';
 init();
@@ -24,5 +28,24 @@ app.innerHTML = `
   in South Carolina are quite varied.
 
 </p>
+
+  <h3>Recent Earthquakes near South Carolina, (1 week)</h3>
+
+    <div id='maptable' ></div>
 `;
 }
+
+
+const timeRange = Interval.before(DateTime.utc(), Duration.fromISO("P1W"));
+const quakeQuery = retrieveSCQuakesWeek();
+const chanQuery = retrieveStationXML();
+createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
+.then(([quakeMap, quakeTable])=> {
+  const stateBound = stateBoundaries().then(boundary=>{
+    boundary.addTo(quakeMap);
+    return quakeMap;
+  });
+  return Promise.all([quakeMap, quakeTable, stateBound]);
+}).then(() => {
+  console.log("main done map,table")
+});

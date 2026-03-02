@@ -3,7 +3,7 @@ import './leaflet.css'
 
 import {DateTime, Duration, Interval} from 'luxon';
 
-import {createPublicNavigation} from './navbar';
+import {createMainNavigation} from './navbar';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
 import {createMapAndTable} from './map_table';
 import {stateBoundaries} from './maplayers';
@@ -12,7 +12,7 @@ import {stateBoundaries} from './maplayers';
 import {init} from './util';
 init();
 
-createPublicNavigation();
+createMainNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
