@@ -37,7 +37,7 @@ closeDialogButton.addEventListener("click", () => {
 
 
 
-const quakeMap = basicSCMap(document.querySelector("#map"), 7);
+const quakeMap = basicSCMap(document.querySelector("#map")!, 7);
 
 const hist_style = {
   color: "black",
@@ -63,10 +63,11 @@ Promise.all(eqUrls.map( url => {
   qmlList.forEach( qmlEvents => quakeList = quakeList.concat(qmlEvents));
   return quakeList;
 }).then(quakeList => {
-  let table = document.querySelector("sp-quake-table");
-  if (table) {table.quakeList = quakeList;
+  let table = document.querySelector("sp-quake-table") as sp.infotable.QuakeTable;
+  if (table) {
+    table.quakeList = quakeList;
     table.addEventListener("quakeclick", (evt) => {
-      window.location =`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`;
+      window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
     });
   }
 }).catch( e => {

@@ -15,7 +15,7 @@ export function createMapAndTable(divSelector: string = "map",
     quakePromise: Promise<Array<sp.quakeml.Quake>>,
     staxmlPromise: Promise<Array<sp.stationxml.Network>>,
     zoomLevel=7
-): [L.Map, sp.infotable.QuakeTable, ] {
+) {
   const outerDiv = document.querySelector(divSelector);
   if (outerDiv == null) {
     throw new Error("Can't find div for "+divSelector);
@@ -36,20 +36,24 @@ export function createMapAndTable(divSelector: string = "map",
     window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   }) as EventListener);
   tableDiv.appendChild(quakeTable);
-  const drawQuakePromise = quakePromise.then(quakeList=> {
-    const quakesInTime = quakeList.filter(q => {
-      return timeRange.start <= q.time && q.time <= timeRange.end;
+  const sleepPromise = new Promise(resolve => setTimeout(resolve, 500));
+  const drawQuakePromise = sleepPromise
+  .then(() => {
+      return quakePromise.then(quakeList=> {
+      const quakesInTime = quakeList.filter(q => {
+        return timeRange.start <= q.time && q.time <= timeRange.end;
+      });
+      quakeTable.quakeList = quakesInTime;
+      addQuakesToMap(quakeMap, quakesInTime);
+      return quakesInTime;
     });
-    quakeTable.quakeList = quakesInTime;
-    addQuakesToMap(quakeMap, quakesInTime);
-    return quakesInTime;
   });
   const drawStationPromies = staxmlPromise.then(networkList => {
     networkList.forEach(n => addStationsToMap(quakeMap, n.stations));
     return networkList;
   })
-  return Promise.all([quakePromise, staxmlPromise])
+  return Promise.all([drawQuakePromise, drawStationPromies])
   .then(()=> {
-    return [quakeMap, quakeTable];
+    return Promise.resolve([quakeMap, quakeTable]);
   });
 }

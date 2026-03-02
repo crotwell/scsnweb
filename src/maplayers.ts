@@ -61,7 +61,6 @@ export function historicEarthquakes(timeRange?: Interval|null, style?: object ) 
                             style: style
                           });
 
-      return hisGeoJson;
     });
   return historicalLayer;
 }
@@ -190,7 +189,7 @@ export function addGraticuleToMap(map: L.Map, style?: object) {
     };
   }
   const intervalLatLng = bestLatLonGradiculeIncrement(map.getBounds());
-  if (L.graticule) {
+  if ('graticule' in L) {
     L.graticule({
         sphere: true,
         style: style,

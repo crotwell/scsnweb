@@ -30,7 +30,7 @@ app.innerHTML= `
   </div>
 `;
 
-const map = basicSCMap(document.querySelector("#map"), 11, [34.15, -80.74]);
+const map = basicSCMap(document.querySelector("#map")!, 11, [34.15, -80.74]);
 
 const swarmStart = DateTime.fromISO("2021-12-27T00:00");
 /*
@@ -55,7 +55,7 @@ retrieveHistoric().then(quakeList => {
 
   });
 }).then(swarmQuakes => {
-  document.querySelector("#numquakes").textContent = swarmQuakes.length;
+  document.querySelector("#numquakes")!.textContent = ""+swarmQuakes.length;
   return swarmQuakes;
 }).then(swarmQuakes => {
   addQuakesToMap(map, swarmQuakes);

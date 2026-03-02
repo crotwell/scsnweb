@@ -5,7 +5,7 @@ import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMapAndTable} from './map_table';
-
+import {stateBoundaries} from './maplayers';
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML } from './datastore';
 import {init} from './util';

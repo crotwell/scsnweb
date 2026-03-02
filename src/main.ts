@@ -50,6 +50,6 @@ const timeRange = Interval.before(DateTime.utc(), Duration.fromISO("P1W"));
 const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
-.then(([map, table]) => {
+.then(() => {
   console.log("main done map,table")
 });
