@@ -9,6 +9,7 @@ import {retrieveStationXML} from './datastore';
 import {
   basicSCMap,
   addStationsToMap,
+  stateBoundaries
 } from './maplayers';
 import {init} from './util';
 init();
@@ -116,6 +117,13 @@ retrieveStationXML()
     });
     return Promise.all([staxml]);
   });
+
+}).then( (staxml) => {
+  const stateBound = stateBoundaries().then(boundary=>{
+    boundary.addTo(stationMap);
+    return stationMap;
+  });
+  return Promise.all([staxml, stateBound]);
 }).then( () => {
   console.log("Promise  for map done")
 });

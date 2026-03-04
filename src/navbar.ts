@@ -69,7 +69,7 @@ export function createPublicNavigation() {
   }
   const areatitle = document.querySelector<HTMLSpanElement>('#areatitle')!
   if (areatitle) {
-    areatitle.innerHTML = `<a href="${import.meta.env.BASE_URL}index.html">South Carolina Seismic Network</a>`;
+    areatitle.innerHTML = `<a href="${import.meta.env.BASE_URL}outreach/index.html">South Carolina Seismic Network</a>`;
   }
   const innerNav = document.querySelector<HTMLDivElement>('#nav')!
   if (innerNav) {
