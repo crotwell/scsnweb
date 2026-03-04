@@ -116,7 +116,7 @@ export interface StatesGeoJsonProperties {
 
 export function basicSCMap(div: HTMLDivElement,
     zoom: number=10,
-    center: L.LatLngExpression =[33.70, -80.75]): L.Map {
+    center: L.LatLngExpression =[33.50, -80.75]): L.Map {
   if (div == null) {
     console.log(`basicSCMap() div is null`);
   }
