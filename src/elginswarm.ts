@@ -61,7 +61,10 @@ retrieveHistoric().then(quakeList => {
   addQuakesToMap(map, swarmQuakes);
   console.log(`Swarm earthquakes: ${swarmQuakes.length}`);
   const quakeTable = createQuakeTable(swarmQuakes);
-  quakeTable.addEventListener("quakeclick", (evt: CustomEvent<sp.quakeml.Quake>) => {
+  quakeTable.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, (evt) => {
+    if (!sp.quakeml.isQuakeClickCustomEvent(evt)) {
+      throw new Error("not a QuakeClickEvent");
+    }
     window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
   const tableDiv = document.querySelector<HTMLDivElement>('#table')!;

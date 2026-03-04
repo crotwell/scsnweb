@@ -1,7 +1,6 @@
 import './style.css'
 import './leaflet.css'
 
-import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 import {retrieveQuakeML} from './datastore';
 import {createPublicNavigation} from './navbar';
@@ -10,7 +9,6 @@ import {
   addQuakesToMap,
   historicEarthquakes,
   stateBoundaries,
-  HISTORIC_URL, ANCIENT_URL
 } from './maplayers';
 import {init} from './util';
 init();
@@ -63,9 +61,3 @@ historicEarthquakes(timeRange, hist_style)
     return quakeMap;
   });
 });
-
-const eqUrls = [
-  //ANCIENT_URL,
-  HISTORIC_URL,
-
-];

@@ -29,12 +29,12 @@ export function createMapAndTable(divSelector: string = "map",
 
   const quakeMap = basicSCMap(mapDiv, zoomLevel);
   let quakeTable = createQuakeTable([]);
-  quakeTable.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, ((evt: Event) => {
+  quakeTable.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, evt => {
     if (!sp.quakeml.isQuakeClickCustomEvent(evt)) {
       throw new Error("not a QuakeClickEvent");
     }
     window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
-  }) as EventListener);
+  });
   tableDiv.appendChild(quakeTable);
   const sleepPromise = new Promise(resolve => setTimeout(resolve, 500));
   const drawQuakePromise = sleepPromise
