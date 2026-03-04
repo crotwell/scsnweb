@@ -44,7 +44,7 @@ let navPublic = `
 let navResearch = `
 <nav class="sidebar">
   <ul>
-    <li><a href="https://eeyore.seis.sc.edu/scsn/status">Status</a></li>
+    <li><a href="https://eeyore.seis.sc.edu/scsn/status">SCSNStatus</a></li>
     <li><a href="${import.meta.env.BASE_URL}software/index.html">Software</a></li>
     <li><a href="${import.meta.env.BASE_URL}contact/index.html">Contact</a></li>
   </ul>

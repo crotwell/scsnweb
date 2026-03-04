@@ -1,10 +1,10 @@
 import './style.css'
-import {createPublicNavigation} from './navbar';
+import {createResearchNavigation} from './navbar';
 
 import {init} from './util';
 init();
 
-createPublicNavigation();
+createResearchNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
