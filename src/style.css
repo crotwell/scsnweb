@@ -1,7 +1,6 @@
 :root {
-  font-family: Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: 'Berlingske Serif', 'Georgia', serif;
+
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
@@ -28,17 +27,25 @@ div.uscLogo img {
 }
 div.uscLogo a.seoe {
 }
+div.seoe {
+    align-self: center;
+    background-color: black;
+    justify-self: end;
+    font-size: larger;
+    margin: 3px;
+    font-family: 'Berlingske Serif', 'Georgia', serif;
+}
 
-span.seoeLogo {
+div.seoeLogo {
   align-self: center;
   background-color: black;
   justify-self: end;
-  font-size: 1.9em;
+  font-size: x-large;
   margin: 3px;
   font-family: 'Berlingske Serif', 'Georgia', serif;
     align-self: center;
 }
-span.seoeLogo a {
+div.seoeLogo a {
   color: white;
 }
 
@@ -47,13 +54,19 @@ div.scsnLogo {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: x-large;
+  margin-top: 3px;
 }
 div.scsnLogo span a {
-  font-size: 1.9em;
+
   color: white;
   margin: 3px;
   font-family: 'Berlingske Serif', 'Georgia', serif;
   text-align: center;
+}
+nav ul {
+  margin-top: 3px;
+  margin-bottom: 3px;
 }
 
 #nav ul li {
@@ -62,7 +75,7 @@ div.scsnLogo span a {
   min-width: 5rem;
   text-align: center;
   font-family: 'Berlingske Serif', 'Georgia', serif;
-  font-size: xx-small;
+  font-size: medium;
 }
 
 #nav ul li a {
@@ -144,12 +157,10 @@ a.bigbutton {
   font-family: 'Berlingske Serif', 'Georgia', serif;
 }
 
-
 a {
-  font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }

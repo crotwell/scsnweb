@@ -4,14 +4,18 @@ import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 let navHeader = `
 <header>
   <div class="uscLogo">
-  <a href="https://sc.edu" target="_blank">
-    <img src="${scLogo}" class="logo" alt="USC logo" />
-  </a>
-    <span class="seoeLogo"><a href="https://seoe.sc.edu" target="_blank">
-    School of Earth, Ocean and Environment</a></span>
+    <a href="https://sc.edu" target="_blank">
+      <img src="${scLogo}" class="logo" alt="USC logo" />
+    </a>
+    <div class="seoe">
+      <div class="seoeLogo"><a href="https://seoe.sc.edu" target="_blank">
+      School of Earth, Ocean and Environment</a></div>
+      <div class="seoeLogo"><a href="${import.meta.env.BASE_URL}index.html" target="_blank">
+      Seismology at USC</a></div>
+    </div>
   </div>
   <div class="scsnLogo">
-    <span><a href="${import.meta.env.BASE_URL}index.html">South Carolina Seismic Network</a></span>
+    <span id="areatitle"><a href="${import.meta.env.BASE_URL}index.html">South Carolina Seismic Network</a></span>
     <span id="nav"></span>
   </div>
 </header>
@@ -63,6 +67,10 @@ export function createPublicNavigation() {
   if (navDiv) {
     navDiv.innerHTML = navHeader;
   }
+  const areatitle = document.querySelector<HTMLSpanElement>('#areatitle')!
+  if (areatitle) {
+    areatitle.innerHTML = `<a href="${import.meta.env.BASE_URL}index.html">South Carolina Seismic Network</a>`;
+  }
   const innerNav = document.querySelector<HTMLDivElement>('#nav')!
   if (innerNav) {
     innerNav.innerHTML = navPublic;
@@ -73,6 +81,10 @@ export function createResearchNavigation() {
   const navDiv = document.querySelector<HTMLDivElement>('#head')!
   if (navDiv) {
     navDiv.innerHTML = navHeader;
+  }
+  const areatitle = document.querySelector<HTMLSpanElement>('#areatitle')!
+  if (areatitle) {
+    areatitle.innerHTML = `<a href="${import.meta.env.BASE_URL}research/index.html">Research</a>`;
   }
   const innerNav = document.querySelector<HTMLDivElement>('#nav')!
   if (innerNav) {
