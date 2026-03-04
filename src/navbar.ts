@@ -4,13 +4,13 @@ import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 let navHeader = `
 <header>
   <div class="uscLogo">
-    <a href="https://sc.edu" target="_blank">
+    <a href="https://sc.edu">
       <img src="${scLogo}" class="logo" alt="USC logo" />
     </a>
     <div class="seoe">
-      <div class="seoeLogo"><a href="https://seoe.sc.edu" target="_blank">
+      <div class="seoeLogo"><a href="https://seoe.sc.edu">
       School of Earth, Ocean and Environment</a></div>
-      <div class="seoeLogo"><a href="${import.meta.env.BASE_URL}index.html" target="_blank">
+      <div class="seoeLogo"><a href="${import.meta.env.BASE_URL}index.html">
       Seismology at USC</a></div>
     </div>
   </div>
