@@ -2,6 +2,7 @@
 import './style.css'
 
 import * as sp from 'seisplotjs';
+import {DateTime} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, quakeById} from './datastore';
@@ -43,6 +44,14 @@ if (eventid == null) {
   throw new Error("Can't find quake");
 }
 
+const latlonF = new Intl.NumberFormat(navigator.language,
+  { maximumFractionDigits: 2 });
+  const depthF = new Intl.NumberFormat(navigator.language,
+    { maximumFractionDigits: 2,
+      style: "unit",
+      unit: "kilometer",
+      unitDisplay: "short"
+     });
 Promise.all([quakeById(eventid), retrieveStationXML()])
   .then(([quake, staxml]) => {
     if (quake == null) {
@@ -51,7 +60,7 @@ Promise.all([quakeById(eventid), retrieveStationXML()])
     const quakeInfo = document.querySelector('#quakeinfo');
     if (quakeInfo!=null) {
       quakeInfo.textContent =
-      `for ${quake.time} (${quake.latitude}, ${quake.longitude}) Mag: ${quake.magnitude.mag} Depth: ${quake.depth} m`;
+      `for ${quake.time.toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)} (${latlonF.format(quake.latitude)}, ${latlonF.format(quake.longitude)}) Mag: ${quake.magnitude.mag} Depth: ${depthF.format(quake.depth/1000)}`;
     }
     const filteredStaxml: Array<sp.stationxml.Network> = [];
     staxml.forEach( net => {
