@@ -120,6 +120,7 @@ export function basicSCMap(div: HTMLDivElement,
   if (div == null) {
     console.log(`basicSCMap() div is null`);
   }
+  sp.cssutil.insertCSS(sp.leafletutil.defaultMarker_css, "spjs_station");
   const backgroundLayer = L.tileLayer(WORLD_OCEAN, {
   	maxZoom: 19,
   	attribution: WORLD_OCEAN_ATTR
