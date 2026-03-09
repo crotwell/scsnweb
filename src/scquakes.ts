@@ -48,6 +48,20 @@ const quakeQuery = retrieveQuakeML().then(qml => qml.eventList);
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable]) => {
+  const spanEl = document.createElement("span");
+  spanEl.innerHTML = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
+  const csvButton = document.createElement("button");
+  csvButton.name="Download CSV";
+  csvButton.textContent="Download CSV";
+  csvButton.title="download table as csv";
+  csvButton.addEventListener("click", (evt) => {
+    const content = quakeTable.tableToCSV();
+    console.log(content)
+    const filename = "sc_earthquakes.csv";
+    sp.util.downloadBlobAsFile(new TextEncoder().encode(content), filename);
+  });
+  spanEl.appendChild(csvButton);
+  quakeTable.caption = spanEl;
   const others = new sp.fdsnstation.StationQuery();
   others.latitude(33.7).longitude(-80.7).maxRadius(2)
     .startTime(sp.util.isoToDateTime("now"))
