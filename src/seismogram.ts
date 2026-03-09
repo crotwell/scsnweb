@@ -16,7 +16,7 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
 app.innerHTML = `
-  <h3>Seismograms recorded in South Carolina <span id="quakeinfo"></span></h3>
+  <h1>Seismograms recorded in South Carolina <span id="quakeinfo"></span></h1>
 
   <div id="seismo">
     <sp-organized-display sort="distance" map="true">

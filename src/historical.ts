@@ -18,7 +18,7 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
 app.innerHTML = `
-  <h3>Earthquakes in SC since June 2009</h3>
+  <h1>Earthquakes in SC since June 2009</h1>
   <div id='map' width="300" height="300"></div>
   <div id='table'>
   </div>

@@ -20,7 +20,8 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
 app.innerHTML = `
-<h5>Click a station (triangle) to see last 24 hours of data.</h5>
+<h1>24-hour helicorder for seismometers in SC</h1>
+<span>Click a station (triangle) to see last 24 hours of data.</span>
 <div id="map">map here</div>
 <h5>Mouse Time: <span id="mousetime"></span></h5>
 <sp-helicorder></sp-helicorder>
