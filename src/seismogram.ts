@@ -19,7 +19,7 @@ app.innerHTML = `
   <h3>Seismograms recorded in South Carolina <span id="quakeinfo"></span></h3>
 
   <div id="seismo">
-    <sp-organized-display sort="distance">
+    <sp-organized-display sort="distance" map="true">
     </sp-organized-display>
   </div>
 
