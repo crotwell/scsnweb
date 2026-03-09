@@ -56,6 +56,10 @@ export function createMainNavigation() {
   if (navDiv) {
     navDiv.innerHTML = navHeader;
   }
+  const areatitle = document.querySelector<HTMLSpanElement>('#areatitle')!
+  if (areatitle) {
+    areatitle.innerHTML = `<a href="${import.meta.env.BASE_URL}">Seismology at USC</a>`;
+  }
   const innerNav = document.querySelector<HTMLDivElement>('#nav')!
   if (innerNav) {
     innerNav.innerHTML = navMain;
