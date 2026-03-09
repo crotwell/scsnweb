@@ -10,7 +10,7 @@ import {
   addQuakesToMap,
 } from './maplayers';
 import {retrieveHistoric} from './datastore';
-import {createQuakeTable} from './util';
+import {createQuakeTable, createCsvDownloadCaption} from './map_table';
 import {init} from './util';
 init();
 
@@ -67,6 +67,9 @@ retrieveHistoric().then(quakeList => {
     }
     window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
+  const text = `Earthquakes in the Lugoff-Elgin Swarm, ${swarmStart.toFormat(DateTime.DATE_MED)} to present. `;
+  const caption = createCsvDownloadCaption(text);
+  quakeTable.caption = caption;
   const tableDiv = document.querySelector<HTMLDivElement>('#table')!;
   tableDiv.appendChild(quakeTable);
   quakeTable.draw();

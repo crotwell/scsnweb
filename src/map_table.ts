@@ -31,6 +31,23 @@ export function createQuakeTable(quakes: Array<sp.quakeml.Quake>): sp.infotable.
     return quakeTable;
 }
 
+export function createCsvDownloadCaption(text: string): HTMLElement {
+  const spanEl = document.createElement("span");
+  spanEl.innerHTML = text;
+  const csvButton = document.createElement("button");
+  csvButton.name="Download CSV";
+  csvButton.textContent="Download CSV";
+  csvButton.title="download table as csv";
+  csvButton.addEventListener("click", (evt) => {
+    const content = quakeTable.tableToCSV();
+    console.log(content)
+    const filename = "sc_earthquakes.csv";
+    sp.util.downloadBlobAsFile(new TextEncoder().encode(content), filename);
+  });
+  spanEl.appendChild(csvButton);
+  return spanEl;
+}
+
 
 export function createMapAndTable(divSelector: string = "map",
     timeRange: Interval,

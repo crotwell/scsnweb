@@ -5,7 +5,7 @@ import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMainNavigation} from './navbar';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
-import {createMapAndTable} from './map_table';
+import {createMapAndTable, createCsvDownloadCaption} from './map_table';
 import {stateBoundaries} from './maplayers';
 
 
@@ -47,12 +47,20 @@ closeDialogButton.addEventListener("click", () => {
   dialog.close();
 });
 
-
-const timeRange = Interval.before(DateTime.utc(), Duration.fromISO("P1W"));
+const recentQuakeTimeDuration = Duration.fromISO("P1W");
+const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable])=> {
+  let caption;
+  if (quakeTable.quakeList.length === 0) {
+    caption = `No Earthquakes located near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
+  } else {
+    const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
+    caption = createCsvDownloadCaption(text);
+  }
+  quakeTable.caption = caption;
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);
     return quakeMap;
