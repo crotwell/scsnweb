@@ -22,7 +22,7 @@ app.innerHTML = `
   <div id="seismo">
     <sp-organized-display sort="distance" map="true"
     centerLat=${CENTER_SC_LAT}, centerLon=${CENTER_SC_LON},
-    zoomLevel="7" maxZoom="16" fitBounds="false">
+    zoomLevel="7" maxZoom="16" >
     </sp-organized-display>
   </div>
 
