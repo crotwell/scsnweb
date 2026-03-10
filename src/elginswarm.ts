@@ -67,8 +67,8 @@ retrieveHistoric().then(quakeList => {
     }
     window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
-  const text = `Earthquakes in the Lugoff-Elgin Swarm, ${swarmStart.toFormat(DateTime.DATE_MED)} to present. `;
-  const caption = createCsvDownloadCaption(text);
+  const text = `Earthquakes in the Lugoff-Elgin Swarm, ${swarmStart.toLocaleString(DateTime.DATE_MED)} to present. `;
+  const caption = createCsvDownloadCaption(quakeTable, text);
   quakeTable.caption = caption;
   const tableDiv = document.querySelector<HTMLDivElement>('#table')!;
   tableDiv.appendChild(quakeTable);

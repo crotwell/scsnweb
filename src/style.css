@@ -99,7 +99,8 @@ sp-station-quake-map.large {
 }
 
 .stationMapMarker.otherstation {
-  color: darkgrey;
+  stroke: darkgrey;
+  fill: darkgrey;
 }
 
 .leaflet-container {

@@ -114,9 +114,12 @@ export interface StatesGeoJsonProperties {
   CENSUSAREA: string;
 }
 
+export const CENTER_SC_LAT=33.50;
+export const CENTER_SC_LON=-80.75;
+
 export function basicSCMap(div: HTMLDivElement,
     zoom: number=10,
-    center: L.LatLngExpression =[33.50, -80.75]): L.Map {
+    center: L.LatLngExpression =[CENTER_SC_LAT, CENTER_SC_LON]): L.Map {
   if (div == null) {
     console.log(`basicSCMap() div is null`);
   }

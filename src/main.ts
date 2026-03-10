@@ -58,7 +58,7 @@ createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
     caption = `No Earthquakes located near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
   } else {
     const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
-    caption = createCsvDownloadCaption(text);
+    caption = createCsvDownloadCaption(quakeTable, text);
   }
   quakeTable.caption = caption;
   const stateBound = stateBoundaries().then(boundary=>{

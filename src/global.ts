@@ -51,7 +51,7 @@ const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery, 1)
 .then(([quakeMap, quakeTable])=> {
   const text = `Significant Earthquakes in last ${recentQuakeTimeDuration.toHuman()}. `;
-  const caption = createCsvDownloadCaption(text);
+  const caption = createCsvDownloadCaption(quakeTable, text);
   quakeTable.caption = caption;
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);

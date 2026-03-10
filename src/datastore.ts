@@ -14,19 +14,16 @@ export function retrieveStationXML(): Promise<Array<sp.stationxml.Network>> {
     staxml.forEach(net=> {
       net.stations = net.stations.filter(sta => !sta.endDate); // active, so no endDate
       net.stations.forEach(sta => {
-        const seisChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") && (
-            ch.channelCode.charAt(1) === 'H') &&
-            ch.channelCode.charAt(2) === 'Z');
-        const smChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") && (
-            ch.channelCode.charAt(1) === 'N') &&
-            ch.channelCode.charAt(2) === 'Z');
+        const seisChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") &&
+            ch.channelCode.charAt(1) === 'H');
+        const smChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") &&
+            ch.channelCode.charAt(1) === 'N');
         if (seisChans.length > 0) {
           sta.channels = seisChans;
         } else {
           sta.channels = smChans;
         }
       });
-      //net.stations = net.stations.filter(sta => sta.stationCode === "JSC" || sta.stationCode === "PARR");
       net.stations = net.stations.filter(sta => sta.channels.length > 0);
     });
     staxml = staxml.filter(net => net.stations.length > 0);
@@ -37,9 +34,21 @@ export function retrieveStationXML(): Promise<Array<sp.stationxml.Network>> {
 export function seismometerChannels(staxml: Array<sp.stationxml.Network>): Array<sp.stationxml.Network> {
   staxml.forEach(net=> {
     net.stations.forEach(sta => {
-      const seisChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") && (
-          ch.channelCode.charAt(1) === 'H') &&
-          ch.channelCode.charAt(2) === 'Z');
+      const seisChans = sta.channels.filter(ch => ch.channelCode.startsWith("H") &&
+          ch.channelCode.charAt(1) === 'H');
+      sta.channels = seisChans;
+    });
+    net.stations = net.stations.filter(sta => sta.channels.length > 0);
+  });
+
+  staxml = staxml.filter(net => net.stations.length > 0);
+  return staxml;
+}
+
+export function verticalChannels(staxml: Array<sp.stationxml.Network>): Array<sp.stationxml.Network> {
+  staxml.forEach(net=> {
+    net.stations.forEach(sta => {
+      const seisChans = sta.channels.filter(ch => ch.channelCode.charAt(2) === 'Z');
       sta.channels = seisChans;
     });
     net.stations = net.stations.filter(sta => sta.channels.length > 0);
@@ -54,10 +63,8 @@ export function loadStations(): Promise<Array<sp.stationxml.Station>> {
   if (!staStored) {
     return retrieveStationXML().then( staxml => {
       //localStorage.setItem("stationxml", JSON.stringify(staxml));
-      let staList: Array<sp.stationxml.Station> = [];
-      staxml.forEach(net=> {
-        staList = staList.concat(net.stations);
-      });
+      let staList: Array<sp.stationxml.Station> =
+        Array.from(sp.stationxml.activeStations(staxml));
       return staList;
     })
   } else {

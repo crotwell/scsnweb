@@ -22,7 +22,7 @@ if (true) {
 app.innerHTML = `
 <h1>24-hour helicorder for seismometers in SC</h1>
 <span>Click a station (triangle) to see last 24 hours of data.</span>
-<div id="map">map here</div>
+<div id="map" ></div>
 <h5>Mouse Time: <span id="mousetime"></span></h5>
 <sp-helicorder></sp-helicorder>
 `
@@ -55,19 +55,33 @@ heli.addEventListener("mouseleave", (hEvent) => {
     }
   }
 });
+heli.addEventListener(sp.helicorder.HELI_CLICK_EVENT, (hEvent) => {
+  const time = hEvent.detail.time;
+  const channel = hEvent.detail.channel;
+  const duration = "PT5M";
+  if (channel != null) {
+    const seismo_href = `${import.meta.env.BASE_URL}seismogram/index.html?net=${channel.networkCode}&sta=${channel.stationCode}&time=${time.toISO()}&dur=${duration}`;
+    window.location.assign(seismo_href);
+  } else {
+    console.log("heli click but no channel")
+  }
+})
 
 const ianaTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 retrieveStationXML()
 .then((staxml) => {
+  let stationMarkers: Array<L.Marker> = [];
   staxml.forEach(net=> {
-    addStationsToMap(stationMap, net.stations);
+    stationMarkers=stationMarkers.concat(addStationsToMap(stationMap, net.stations));
   });
   stationMap.getContainer().addEventListener(sp.stationxml.STATION_CLICK_EVENT, (evt) => {
     if ( ! (evt instanceof CustomEvent ) || !(evt?.detail.station)) {
       throw new Error("event not sp.stationxml.STATION_CLICK_EVENT");
     }
-    console.log(`sta click: ${evt?.detail.station.stationCode}`);
+    sp.cssutil.insertCSS(`.${sp.leafletutil.StationMarkerClassName}.${sp.leafletutil.cssClassForStationCodes(evt.detail.station)} {
+      stroke: white;
+    }`, "stationhighlight");
     let minMaxQ = new sp.mseedarchive.MSeedArchive(
           MINMAX_URL,
           "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H",

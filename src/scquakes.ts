@@ -49,7 +49,7 @@ const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable]) => {
   const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
-  const caption = createCsvDownloadCaption(text);
+  const caption = createCsvDownloadCaption(quakeTable, text);
   quakeTable.caption = caption;
   const others = new sp.fdsnstation.StationQuery();
   others.latitude(33.7).longitude(-80.7).maxRadius(2)
