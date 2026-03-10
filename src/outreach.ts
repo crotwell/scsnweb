@@ -16,16 +16,17 @@ app.innerHTML = `
 
 <h3>Did an earthquake happen?</h3>
 <p>
-  Did you you feel something and want to know if it was an earthquake?
+  Did you you feel something and want to know if it was an earthquake? The map
+  below shows earthquakes detected in South Carolina in the last week.
   Check the list of <a href="${import.meta.env.BASE_URL}scquakes/index.html">recent earthquakes</a> in South Carolina
   to see if one has been detected. Note that especially for small
   earthquakes during non-business times, it may be a few hours before it
   shows up in the list.
 </p>
-<h3>Where have earthquakes happened in South Carolina?</h3>
+<h3>Where have earthquakes happened in South Carolina in the past?</h3>
 <p>
   The patterns of <a href="${import.meta.env.BASE_URL}historical">historical seismicity</a>
-  in South Carolina are quite varied.
+  in South Carolina are quite varied. 
 
 </p>
 
