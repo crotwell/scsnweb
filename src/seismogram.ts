@@ -100,6 +100,11 @@ function displayForQuake(eventid: string) {
 }
 
 function displayForTime(netCode: string, staCode: string, time: DateTime, duration: Duration) {
+  const quakeInfo = document.querySelector('#quakeinfo');
+  if (quakeInfo!=null) {
+    quakeInfo.textContent =
+    `for ${netCode}.${staCode} near ${time.toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}`;
+  }
   const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
   return retrieveStationXML()
   .then(staxml => {
