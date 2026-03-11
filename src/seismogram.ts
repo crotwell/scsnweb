@@ -22,7 +22,7 @@ app.innerHTML = `
   <div id="seismo">
     <sp-organized-display sort="distance" map="true"
     centerLat=${CENTER_SC_LAT}, centerLon=${CENTER_SC_LON},
-    zoomLevel="7" maxZoom="16" >
+    zoomLevel="7" maxZoom="13" >
     </sp-organized-display>
   </div>
 
@@ -95,6 +95,7 @@ function displayForQuake(eventid: string) {
         dataset.waveforms.forEach( sdd => {sdd.alignmentTime = quake.time;});
       }
        const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
+       orgdisp.setAttribute(sp.leafletutil.FIT_BOUNDS, "true");
        orgdisp.seisData = dataset.waveforms;
      }).catch( err => {
        sp.util.warn(err);
@@ -109,6 +110,8 @@ function displayForTime(netCode: string, staCode: string, time: DateTime, durati
     `for ${netCode}.${staCode} near ${time.toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}`;
   }
   const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
+  orgdisp.setAttribute(sp.leafletutil.FIT_BOUNDS, "false");
+  orgdisp.setAttribute(sp.leafletutil.ZOOM_LEVEL, "7");
   return retrieveStationXML()
   .then(staxml => {
     const sddList: Array<sp.seismogram.SeismogramDisplayData> = [];
