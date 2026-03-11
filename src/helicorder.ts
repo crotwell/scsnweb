@@ -23,7 +23,13 @@ app.innerHTML = `
 <h1>24-hour helicorder for seismometers in SC</h1>
 <span>Click a station (triangle) to see last 24 hours of data.</span>
 <div id="map" ></div>
-<h5>Mouse Time: <span id="mousetime"></span></h5>
+<p>The most recent 24-hours of seismic data from <span class="stacode"></span>.
+For this station, the display is the
+<em><span class="velacc">velocity</span></em>
+of the ground. Clicking a spot on the display will show a zoomed in version
+of the data around that time.
+</p>
+<div class="mousetime"><label for="mousetime">Mouse Time:</label> <output id="mousetime"></output></div>
 <sp-helicorder></sp-helicorder>
 `
 }
@@ -73,6 +79,12 @@ function displayHeliForStation(station: sp.stationxml.Station) {
   sp.cssutil.insertCSS(`.${sp.leafletutil.StationMarkerClassName}.${sp.leafletutil.cssClassForStationCodes(station)} {
     stroke: white;
   }`, "stationhighlight");
+
+  document.querySelectorAll("span.stacode")
+  .forEach(el => {
+    el.textContent = `station ${station.codes()}, near ${station.name}`;
+  });
+
   let minMaxQ = new sp.mseedarchive.MSeedArchive(
         MINMAX_URL,
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H",
@@ -85,6 +97,10 @@ function displayHeliForStation(station: sp.stationxml.Station) {
       break;
     }
   }
+  document.querySelectorAll("span.velacc")
+  .forEach(el => {
+    el.textContent = (minMaxInst === SEIS_MINMAX_CODE) ? "velocity" : "acceleration";
+  });
 
   let chanCode =`L${minMaxInst}${orientCode}`;
   let fake = new sp.stationxml.Channel(
