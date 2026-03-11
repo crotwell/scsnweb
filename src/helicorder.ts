@@ -133,7 +133,7 @@ retrieveStationXML()
     if ( ! (evt instanceof CustomEvent ) || !(evt?.detail.station)) {
       throw new Error("event not sp.stationxml.STATION_CLICK_EVENT");
     }
-    displayHeliForStation(event.detail.station);
+    displayHeliForStation(evt.detail.station);
   });
   const parsedURL = new URL(document.URL);
   let staCode = parsedURL.searchParams.get("sta");
