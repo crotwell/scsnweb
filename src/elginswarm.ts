@@ -74,4 +74,6 @@ retrieveHistoric().then(quakeList => {
   tableDiv.appendChild(quakeTable);
   quakeTable.draw();
 
+}).catch( err => {
+  sp.util.warn(err);
 });

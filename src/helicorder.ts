@@ -141,6 +141,9 @@ retrieveStationXML()
   return Promise.all([staxml, stateBound]);
 }).then( () => {
   console.log("Promise  for map done")
+
+}).catch( err => {
+  sp.util.warn(err);
 });
 
 setInterval( () => {

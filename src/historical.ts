@@ -60,4 +60,7 @@ historicEarthquakes(timeRange, hist_style)
     boundary.addTo(quakeMap);
     return quakeMap;
   });
+
+}).catch( err => {
+  sp.util.warn(err);
 });

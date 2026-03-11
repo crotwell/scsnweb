@@ -58,4 +58,7 @@ createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery, 1)
     return quakeMap;
   });
   return Promise.all([quakeMap, quakeTable, stateBound]);
+
+}).catch( err => {
+  sp.util.warn(err);
 });
