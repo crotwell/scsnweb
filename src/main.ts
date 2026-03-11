@@ -5,7 +5,10 @@ import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMainNavigation} from './navbar';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
-import {createMapAndTable, createCsvDownloadCaption} from './map_table';
+import {createMapAndTable,
+  createCsvDownloadCaption,
+  quakeTableCaptionSC
+} from './map_table';
 import {stateBoundaries} from './maplayers';
 
 
@@ -54,14 +57,8 @@ const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable])=> {
-  let caption;
-  if (quakeTable.quakeList.length === 0) {
-    caption = `No Earthquakes located near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
-  } else {
-    const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
-    caption = createCsvDownloadCaption(quakeTable, text);
-  }
-  quakeTable.caption = caption;
+  quakeTableCaptionSC(quakeTable, recentQuakeTimeDuration);
+  console.log(`set table caption to ${caption}`)
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);
     return quakeMap;

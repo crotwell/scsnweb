@@ -4,7 +4,9 @@ import './leaflet.css'
 import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
-import {createMapAndTable, createCsvDownloadCaption} from './map_table';
+import {createMapAndTable, createCsvDownloadCaption,
+  quakeTableCaptionSC
+} from './map_table';
 import {stateBoundaries} from './maplayers';
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
@@ -48,6 +50,7 @@ const quakeQuery = retrieveQuakeML().then(qml => qml.eventList);
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable]) => {
+  quakeTableCaptionSC(quakeTable, recentQuakeTimeDuration)
   const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
   const caption = createCsvDownloadCaption(quakeTable, text);
   quakeTable.caption = caption;

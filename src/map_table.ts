@@ -97,3 +97,14 @@ export function createMapAndTable(divSelector: string = "map",
     return Promise.resolve([quakeMap, quakeTable]);
   });
 }
+
+export function quakeTableCaptionSC(quakeTable: sp.infotable.QuakeTable, recentQuakeTimeDuration: Duration) {
+  let caption;
+  if (quakeTable.quakeList.length === 0) {
+    caption = `No Earthquakes located near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
+  } else {
+    const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
+    caption = createCsvDownloadCaption(quakeTable, text);
+  }
+  quakeTable.caption = caption;
+}

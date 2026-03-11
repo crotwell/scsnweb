@@ -2,7 +2,7 @@ import './style.css'
 import {createPublicNavigation} from './navbar';
 import {DateTime, Duration, Interval} from 'luxon';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
-import {createMapAndTable} from './map_table';
+import {createMapAndTable, quakeTableCaptionSC} from './map_table';
 import {stateBoundaries} from './maplayers';
 
 import {init} from './util';
@@ -26,7 +26,7 @@ app.innerHTML = `
 <h3>Where have earthquakes happened in South Carolina in the past?</h3>
 <p>
   The patterns of <a href="${import.meta.env.BASE_URL}historical">historical seismicity</a>
-  in South Carolina are quite varied. 
+  in South Carolina are quite varied.
 
 </p>
 
@@ -36,12 +36,13 @@ app.innerHTML = `
 `;
 }
 
-
-const timeRange = Interval.before(DateTime.utc(), Duration.fromISO("P1W"));
+const recentQuakeTimeDuration = Duration.fromISO("P1W");
+const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable])=> {
+  quakeTableCaptionSC(quakeTable, recentQuakeTimeDuration);
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);
     return quakeMap;
