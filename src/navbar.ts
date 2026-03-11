@@ -2,7 +2,6 @@
 import scLogo from '/usc_logo_horizontal_rgb_g_rev.svg'
 
 let navHeader = `
-<header>
   <div class="uscLogo">
     <a href="https://sc.edu">
       <img src="${scLogo}" class="logo" alt="USC logo" />
@@ -18,7 +17,6 @@ let navHeader = `
     <span id="areatitle"><a href="${import.meta.env.BASE_URL}index.html">South Carolina Seismic Network</a></span>
     <span id="nav"></span>
   </div>
-</header>
 `;
 
 let navMain = `
@@ -52,7 +50,8 @@ let navResearch = `
 `;
 
 export function createMainNavigation() {
-  const navDiv = document.querySelector<HTMLDivElement>('#head')!
+  const navDiv: HTMLHeaderElement = document.createElement('header');
+  document.body.insertBefore(navDiv, document.body.firstChild);
   if (navDiv) {
     navDiv.innerHTML = navHeader;
   }
@@ -67,7 +66,8 @@ export function createMainNavigation() {
 }
 
 export function createPublicNavigation() {
-  const navDiv = document.querySelector<HTMLDivElement>('#head')!
+  const navDiv: HTMLHeaderElement = document.createElement('header');
+  document.body.insertBefore(navDiv, document.body.firstChild);
   if (navDiv) {
     navDiv.innerHTML = navHeader;
   }
@@ -82,7 +82,8 @@ export function createPublicNavigation() {
 }
 
 export function createResearchNavigation() {
-  const navDiv = document.querySelector<HTMLDivElement>('#head')!
+  const navDiv: HTMLHeaderElement = document.createElement('header');
+  document.body.insertBefore(navDiv, document.body.firstChild);
   if (navDiv) {
     navDiv.innerHTML = navHeader;
   }

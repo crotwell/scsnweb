@@ -1,7 +1,6 @@
 :root {
   font-family: 'Berlingske Serif', 'Georgia', serif;
 
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: black;
@@ -14,7 +13,6 @@
 
 header {
   background-color: black;
-
 }
 
 div.uscLogo {
@@ -31,7 +29,7 @@ div.seoe {
     align-self: center;
     background-color: black;
     justify-self: end;
-    font-size: larger;
+    font-size: x-large;
     margin: 3px;
     font-family: 'Berlingske Serif', 'Georgia', serif;
 }
@@ -178,7 +176,7 @@ h1 {
 }
 
 #app {
-  max-width: 1280px;
+  
   margin: 0 auto;
   padding: 2rem;
 }
