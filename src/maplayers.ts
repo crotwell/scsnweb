@@ -204,3 +204,34 @@ export function addGraticuleToMap(map: L.Map, style?: object) {
     }).addTo(map);
   }
 }
+
+export function createLegend(map: L.Map, stationSVG?: string, quakeSVG?: string): HTMLDivElement {
+  const div = document.createElement("div");
+  div.classList.add("legend");
+  if (stationSVG == null) {
+    stationSVG = sp.leafletutil.createStationSVG();
+    //stationSVG = sp.leafletutil.createStationMarker();
+  }
+  if (quakeSVG == null) {
+    const px = 20;
+    quakeSVG = `<svg width="${px}" height="${px}"><circle stroke="red" fill="none" cx="${px/2}" cy="${px/2}" r="${px/3}"/></svg>`;
+  }
+  let out = `
+    <h4 class="${sp.leafletutil.StationMarkerClassName}">
+      ${stationSVG}
+      <span>Seismic station</span>
+    </h4>
+    <h4 class="${sp.leafletutil.QuakeMarkerClassName}">
+      ${quakeSVG}
+      <span>Earthquake</span>
+    </h4>
+  `;
+  div.innerHTML = out;
+  const legend = L.control({position: 'topright'});
+  legend.onAdd = function(m) {
+    return div;
+  };
+  legend.addTo(map);
+  console.log(`added legend to map`);
+  return legend;
+}

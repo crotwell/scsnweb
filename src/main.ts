@@ -9,7 +9,7 @@ import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
 import {createMapAndTable,
   quakeTableCaptionSC
 } from './map_table';
-import {stateBoundaries} from './maplayers';
+import {stateBoundaries, createLegend} from './maplayers';
 
 
 import {init} from './util';
@@ -57,6 +57,7 @@ const quakeQuery = retrieveSCQuakesWeek();
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable])=> {
+  createLegend(quakeMap);
   quakeTableCaptionSC(quakeTable, recentQuakeTimeDuration);
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);

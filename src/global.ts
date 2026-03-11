@@ -5,7 +5,7 @@ import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMapAndTable, createCsvDownloadCaption} from './map_table';
-import {stateBoundaries} from './maplayers';
+import {stateBoundaries, createLegend} from './maplayers';
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML } from './datastore';
 import {init} from './util';
@@ -50,6 +50,7 @@ const chanQuery = retrieveStationXML();
 
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery, 1)
 .then(([quakeMap, quakeTable])=> {
+  createLegend(quakeMap);
   const text = `Significant Earthquakes in last ${recentQuakeTimeDuration.toHuman()}. `;
   const caption = createCsvDownloadCaption(quakeTable, text);
   quakeTable.caption = caption;

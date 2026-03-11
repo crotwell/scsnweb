@@ -7,7 +7,7 @@ import {DateTime, Duration, Interval} from 'luxon';
 import {createMapAndTable, createCsvDownloadCaption,
   quakeTableCaptionSC
 } from './map_table';
-import {stateBoundaries} from './maplayers';
+import {stateBoundaries, createLegend} from './maplayers';
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, retrieveQuakeML} from './datastore';
 import {
@@ -50,6 +50,7 @@ const quakeQuery = retrieveQuakeML().then(qml => qml.eventList);
 const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable]) => {
+  createLegend(quakeMap);
   quakeTableCaptionSC(quakeTable, recentQuakeTimeDuration)
   const text = `Recent Earthquakes near South Carolina in last ${recentQuakeTimeDuration.toHuman()}. `;
   const caption = createCsvDownloadCaption(quakeTable, text);

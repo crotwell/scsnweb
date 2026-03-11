@@ -84,6 +84,17 @@ nav ul {
   border-right: 1px solid black;
 }
 
+.legend {
+    padding: 6px 8px;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.legend h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
 sp-station-quake-map {
   min-width: 100px;
   min-height: 100px;
@@ -176,7 +187,7 @@ h1 {
 }
 
 #app {
-  
+
   margin: 0 auto;
   padding: 2rem;
 }

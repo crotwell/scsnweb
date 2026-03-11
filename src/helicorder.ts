@@ -9,7 +9,8 @@ import {retrieveStationXML} from './datastore';
 import {
   basicSCMap,
   addStationsToMap,
-  stateBoundaries
+  stateBoundaries,
+  createLegend
 } from './maplayers';
 import {init} from './util';
 init();
@@ -42,6 +43,7 @@ const SEIS_MINMAX_CODE = "X";
 const SM_MINMAX_CODE = "Y";
 
 const stationMap = basicSCMap(document.querySelector("#map")!, 7);
+createLegend(stationMap);
 
 const heli = document.querySelector("sp-helicorder") as sp.helicorder.Helicorder;
 if (!heli) {throw new Error("Can't find sp-helicorder");}
