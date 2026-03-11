@@ -17,6 +17,7 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 
 if (true) {
 app.innerHTML = `
+<h1>Seismology at USC</h1>
 <div class="publicresearch">
   <div>
     <a class="bigbutton" href="${import.meta.env.BASE_URL}outreach/index.html">Information for the Public</a>
@@ -29,7 +30,7 @@ app.innerHTML = `
     <p>Seismology research at USC, software and tools for seismology research.</p>
   </div>
 </div>
-  <h3>Recent Earthquakes near South Carolina, (1 week)</h3>
+  <h2>Recent Earthquakes near South Carolina, (1 week)</h2>
 
     <div id='maptable' ></div>
   <dialog>
