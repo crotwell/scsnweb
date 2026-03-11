@@ -63,4 +63,5 @@ historicEarthquakes(timeRange, hist_style)
 
 }).catch( err => {
   sp.util.warn(err);
+  throw err;
 });

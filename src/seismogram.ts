@@ -96,7 +96,10 @@ function displayForQuake(eventid: string) {
       }
        const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
        orgdisp.seisData = dataset.waveforms;
-    });
+     }).catch( err => {
+       sp.util.warn(err);
+       throw err;
+     });
 }
 
 function displayForTime(netCode: string, staCode: string, time: DateTime, duration: Duration) {
@@ -121,7 +124,10 @@ function displayForTime(netCode: string, staCode: string, time: DateTime, durati
     return dsQuery.postQuerySeismograms(sddList);
   }).then(_sddList => {
     orgdisp.redraw();
-  })
+  }).catch( err => {
+    sp.util.warn(err);
+    throw err;
+  });
 }
 
 function channelsH_Z(staxml: Array<sp.stationxml.Network>) {

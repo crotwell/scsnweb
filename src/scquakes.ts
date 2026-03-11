@@ -75,4 +75,5 @@ createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
   return Promise.all([quakeMap, quakeTable, otherstaxml, stateBound]);
 }).catch( err => {
   sp.util.warn(err);
+  throw err;
 });

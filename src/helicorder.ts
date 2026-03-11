@@ -144,6 +144,7 @@ retrieveStationXML()
 
 }).catch( err => {
   sp.util.warn(err);
+  throw err;
 });
 
 setInterval( () => {

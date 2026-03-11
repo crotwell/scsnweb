@@ -68,4 +68,5 @@ createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
   console.log("main done map,table")
 }).catch( err => {
   sp.util.warn(err);
+  throw err;
 });
