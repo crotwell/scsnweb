@@ -1,12 +1,12 @@
 import './style.css'
 import './leaflet.css'
 
+import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMainNavigation} from './navbar';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';
 import {createMapAndTable,
-  createCsvDownloadCaption,
   quakeTableCaptionSC
 } from './map_table';
 import {stateBoundaries} from './maplayers';
@@ -58,7 +58,6 @@ const chanQuery = retrieveStationXML();
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 .then(([quakeMap, quakeTable])=> {
   quakeTableCaptionSC(quakeTable, recentQuakeTimeDuration);
-  console.log(`set table caption to ${caption}`)
   const stateBound = stateBoundaries().then(boundary=>{
     boundary.addTo(quakeMap);
     return quakeMap;

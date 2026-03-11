@@ -6,7 +6,7 @@ import {
   addQuakesToMap,
   addStationsToMap,
 } from './maplayers';
-import {Interval} from 'luxon';
+import {Interval, Duration} from 'luxon';
 
 
 export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");

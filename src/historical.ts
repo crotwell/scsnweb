@@ -1,6 +1,7 @@
 import './style.css'
 import './leaflet.css'
 
+import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 import {retrieveQuakeML} from './datastore';
 import {createPublicNavigation} from './navbar';

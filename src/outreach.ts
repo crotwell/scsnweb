@@ -1,4 +1,5 @@
 import './style.css'
+import * as sp from 'seisplotjs';
 import {createPublicNavigation} from './navbar';
 import {DateTime, Duration, Interval} from 'luxon';
 import {retrieveStationXML, retrieveSCQuakesWeek} from './datastore';

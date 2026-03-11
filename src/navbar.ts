@@ -50,7 +50,7 @@ let navResearch = `
 `;
 
 export function createMainNavigation() {
-  const navDiv: HTMLHeaderElement = document.createElement('header');
+  const navDiv: HTMLElement = document.createElement('header');
   document.body.insertBefore(navDiv, document.body.firstChild);
   if (navDiv) {
     navDiv.innerHTML = navHeader;
@@ -66,7 +66,7 @@ export function createMainNavigation() {
 }
 
 export function createPublicNavigation() {
-  const navDiv: HTMLHeaderElement = document.createElement('header');
+  const navDiv: HTMLElement = document.createElement('header');
   document.body.insertBefore(navDiv, document.body.firstChild);
   if (navDiv) {
     navDiv.innerHTML = navHeader;
@@ -82,7 +82,7 @@ export function createPublicNavigation() {
 }
 
 export function createResearchNavigation() {
-  const navDiv: HTMLHeaderElement = document.createElement('header');
+  const navDiv: HTMLElement = document.createElement('header');
   document.body.insertBefore(navDiv, document.body.firstChild);
   if (navDiv) {
     navDiv.innerHTML = navHeader;
