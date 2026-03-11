@@ -69,6 +69,60 @@ heli.addEventListener(sp.helicorder.HELI_CLICK_EVENT, (hEvent) => {
 
 const ianaTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+function displayHeliForStation(station: sp.stationxml.Station) {
+  sp.cssutil.insertCSS(`.${sp.leafletutil.StationMarkerClassName}.${sp.leafletutil.cssClassForStationCodes(station)} {
+    stroke: white;
+  }`, "stationhighlight");
+  let minMaxQ = new sp.mseedarchive.MSeedArchive(
+        MINMAX_URL,
+        "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H",
+      );
+  let minMaxInst = SM_MINMAX_CODE;
+  let orientCode = "Z";
+  for (let ch of station.channels) {
+    if (ch.channelCode === "HHZ") {
+      minMaxInst = SEIS_MINMAX_CODE;
+      break;
+    }
+  }
+
+  let chanCode =`L${minMaxInst}${orientCode}`;
+  let fake = new sp.stationxml.Channel(
+    station,
+    chanCode,
+    DEFAULT_LOC_CODE,
+  );
+  fake.sampleRate = 2;
+
+  if (!heli.heliConfig.fixedTimeScale) {throw new Error("Heli must be fixedTimeScale");}
+  let minMaxSddList = [
+    sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(
+        fake,
+        heli.heliConfig.fixedTimeScale,
+      )
+    ];
+  minMaxQ.loadSeismograms(minMaxSddList).then(sddList => {
+    let nowMarker: sp.seismographmarker.MarkerType = {
+          markertype: "predicted",
+          name: "now",
+          time: DateTime.utc(),
+          description: "now"
+        };
+    if (sddList && sddList.length > 0) {
+      sddList[sddList.length-1].addMarkers(nowMarker);
+    }
+    heli.heliConfig.title = `${station.stationCode} - ${station.name}`
+    heli.heliConfig.lineSeisConfig.title = heli.heliConfig.title;
+    heli.heliConfig.yLabelTimeZone = ianaTZ;
+    heli.heliConfig.xAxisTimeZone = ianaTZ;
+    heli.heliConfig.xLabel = "Local Time";
+    heli.heliConfig.xSublabel = ianaTZ;
+
+    heli.seisData = sddList;
+
+  });
+}
+
 retrieveStationXML()
 .then((staxml) => {
   let stationMarkers: Array<L.Marker> = [];
@@ -79,59 +133,25 @@ retrieveStationXML()
     if ( ! (evt instanceof CustomEvent ) || !(evt?.detail.station)) {
       throw new Error("event not sp.stationxml.STATION_CLICK_EVENT");
     }
-    sp.cssutil.insertCSS(`.${sp.leafletutil.StationMarkerClassName}.${sp.leafletutil.cssClassForStationCodes(evt.detail.station)} {
-      stroke: white;
-    }`, "stationhighlight");
-    let minMaxQ = new sp.mseedarchive.MSeedArchive(
-          MINMAX_URL,
-          "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H",
-        );
-    let minMaxInst = SM_MINMAX_CODE;
-    let orientCode = "Z";
-    for (let ch of evt.detail.station.channels) {
-      if (ch.channelCode === "HHZ") {
-        minMaxInst = SEIS_MINMAX_CODE;
-        break;
+    displayHeliForStation(event.detail.station);
+  });
+  const parsedURL = new URL(document.URL);
+  let staCode = parsedURL.searchParams.get("sta");
+  staCode = staCode ? staCode : "JSC";
+  if (staCode != null ) {
+    let station = null;
+    for (const sta of sp.stationxml.activeStations(staxml)) {
+      if (sta.stationCode === staCode) {
+        station = sta;
       }
     }
-
-    let chanCode =`L${minMaxInst}${orientCode}`;
-    let fake = new sp.stationxml.Channel(
-      evt.detail.station,
-      chanCode,
-      DEFAULT_LOC_CODE,
-    );
-    fake.sampleRate = 2;
-
-    if (!heli.heliConfig.fixedTimeScale) {throw new Error("Heli must be fixedTimeScale");}
-    let minMaxSddList = [
-      sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(
-          fake,
-          heli.heliConfig.fixedTimeScale,
-        )
-      ];
-    minMaxQ.loadSeismograms(minMaxSddList).then(sddList => {
-      let nowMarker: sp.seismographmarker.MarkerType = {
-            markertype: "predicted",
-            name: "now",
-            time: DateTime.utc(),
-            description: "now"
-          };
-      if (sddList && sddList.length > 0) {
-        sddList[sddList.length-1].addMarkers(nowMarker);
-      }
-      heli.heliConfig.title = `${evt.detail.station.stationCode} - ${evt.detail.station.name}`
-      heli.heliConfig.lineSeisConfig.title = heli.heliConfig.title;
-      heli.heliConfig.yLabelTimeZone = ianaTZ;
-      heli.heliConfig.xAxisTimeZone = ianaTZ;
-      heli.heliConfig.xLabel = "Local Time";
-      heli.heliConfig.xSublabel = ianaTZ;
-
-      heli.seisData = sddList;
-
-    });
-    return Promise.all([staxml]);
-  });
+    if (station != null) {
+      displayHeliForStation(station);
+    } else {
+      console.log(`no station found for ${staCode}`)
+    }
+  }
+  return Promise.all([staxml]);
 
 }).then( (staxml) => {
   const stateBound = stateBoundaries().then(boundary=>{
