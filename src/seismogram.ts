@@ -36,6 +36,9 @@ app.innerHTML = `
 `
 }
 
+const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
+orgdisp?.seismographConfig.enableXAxisTimeZone(EasternTimeZone);
+
 const dialog = document.querySelector("dialog");
 const closeDialogButton = document.querySelector("dialog button");
 if (!dialog || !closeDialogButton) {throw new Error("Can't find dialog");}

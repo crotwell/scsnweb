@@ -12,7 +12,7 @@ import {
   stateBoundaries,
   createLegend
 } from './maplayers';
-import {init} from './util';
+import {init, EasternTimeZone} from './util';
 init();
 
 
@@ -75,8 +75,6 @@ heli.addEventListener(sp.helicorder.HELI_CLICK_EVENT, (hEvent) => {
   }
 })
 
-const ianaTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
 function displayHeliForStation(station: sp.stationxml.Station) {
   sp.cssutil.insertCSS(`.${sp.leafletutil.StationMarkerClassName}.${sp.leafletutil.cssClassForStationCodes(station)} {
     stroke: white;
@@ -131,10 +129,11 @@ function displayHeliForStation(station: sp.stationxml.Station) {
     }
     heli.heliConfig.title = `${station.stationCode} - ${station.name}`
     heli.heliConfig.lineSeisConfig.title = heli.heliConfig.title;
-    heli.heliConfig.yLabelTimeZone = ianaTZ;
-    heli.heliConfig.xAxisTimeZone = ianaTZ;
+    heli.heliConfig.yLabelTimeZone = EasternTimeZone;
+    heli.heliConfig.yLabelRightTimeZone = EasternTimeZone;
+    heli.heliConfig.xAxisTimeZone = EasternTimeZone;
     heli.heliConfig.xLabel = "Local Time";
-    heli.heliConfig.xSublabel = ianaTZ;
+    heli.heliConfig.xSublabel = sp.util.nameForTimeZone(EasternTimeZone);
 
     heli.seisData = sddList;
 

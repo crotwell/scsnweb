@@ -1,4 +1,4 @@
-import {Settings} from 'luxon';
+import {Settings, IANAZone} from 'luxon';
 
 import * as sp from 'seisplotjs';
 export function insertFlavicon() {
@@ -21,3 +21,5 @@ export function init() {
 
 
 }
+
+export const EasternTimeZone = new IANAZone( "US/Eastern");
