@@ -1,6 +1,7 @@
 
 
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
+import {checkForNullMagnitude} from './datastore';
 import {
   basicSCMap,
   addQuakesToMap,
@@ -40,7 +41,6 @@ export function createCsvDownloadCaption(quakeTable: sp.infotable.QuakeTable, te
   csvButton.title="download table as csv";
   csvButton.addEventListener("click", (_evt) => {
     const content = quakeTable.tableToCSV();
-    console.log(content)
     const filename = "sc_earthquakes.csv";
     sp.util.downloadBlobAsFile(new TextEncoder().encode(content), filename);
   });
@@ -79,19 +79,20 @@ export function createMapAndTable(divSelector: string = "map",
   const sleepPromise = new Promise(resolve => setTimeout(resolve, 500));
   const drawQuakePromise = sleepPromise
   .then(() => {
-      return quakePromise.then(quakeList=> {
-      const quakesInTime = quakeList.filter(q => {
-        return timeRange.start <= q.time && q.time <= timeRange.end;
+      return quakePromise.then(checkForNullMagnitude)
+      .then(quakeList=> {
+        const quakesInTime = quakeList.filter(q => {
+          return timeRange.start <= q.time && q.time <= timeRange.end;
+        });
+        quakeTable.quakeList = quakesInTime;
+        addQuakesToMap(quakeMap, quakesInTime);
+        return quakesInTime;
       });
-      quakeTable.quakeList = quakesInTime;
-      addQuakesToMap(quakeMap, quakesInTime);
-      return quakesInTime;
-    });
   });
   const drawStationPromies = staxmlPromise.then(networkList => {
     networkList.forEach(n => addStationsToMap(quakeMap, n.stations));
     return networkList;
-  })
+  });
   return Promise.all([drawQuakePromise, drawStationPromies])
   .then(()=> {
     return Promise.resolve([quakeMap, quakeTable]);

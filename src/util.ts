@@ -1,6 +1,7 @@
 import {Settings, IANAZone} from 'luxon';
 
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
+
 export function insertFlavicon() {
   const flaviconLinks = `
   <link rel="apple-touch-icon" sizes="180x180" href="${import.meta.env.BASE_URL}favicon/apple-touch-icon.png">

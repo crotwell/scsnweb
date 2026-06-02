@@ -1,7 +1,7 @@
 import './style.css'
 import './leaflet.css'
 
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMapAndTable, createCsvDownloadCaption,

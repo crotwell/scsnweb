@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  //base: "/scsn/scsnweb/",
+  //base: "/scsn/scsnwebtest/",
   build: {
     sourcemap: true,
     rollupOptions: {

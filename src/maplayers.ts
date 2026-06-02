@@ -1,4 +1,4 @@
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 import * as L from 'leaflet';
 import "leaflet-polar-graticule";
@@ -18,7 +18,7 @@ export const WORLD_OCEAN = "http://www.seis.sc.edu/tilecache/WorldOceanBase/{z}/
 export const WORLD_OCEAN_ATTR = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 
 
-export function historicEarthquakes(timeRange?: Interval|null, style?: object ) {
+export function historicEarthquakes(timeRange?: Interval|null, style?: object ): Promise<L.GeoJSON> {
   if (! style) {
     style = {
       color: "grey",
@@ -29,10 +29,9 @@ export function historicEarthquakes(timeRange?: Interval|null, style?: object ) 
   if (! timeRange) {
     timeRange = Interval.before(DateTime.utc(), Duration.fromISO('P1MT1S'));
   }
-  const historicalLayer =
-    sp.usgsgeojson.loadRawUSGSGeoJsonSummary(HISTORIC_URL)
-    .then(hisGeoJson => {
-      hisGeoJson.features = hisGeoJson.features.filter(q => {
+  return sp.usgsgeojson.loadRawUSGSGeoJsonSummary(HISTORIC_URL)
+    .then((hisGeoJson: sp.usgsgeojson.USGSGeoJsonSummary) => {
+      hisGeoJson.features = hisGeoJson.features.filter((q: sp.quakeml.Quake) => {
         const qTime = DateTime.fromMillis(q.properties.time);
         return qTime < timeRange.start;
       });
@@ -62,7 +61,6 @@ export function historicEarthquakes(timeRange?: Interval|null, style?: object ) 
                           });
 
     });
-  return historicalLayer;
 }
 
 export const TECTONIC_URL = "https://eeyore.seis.sc.edu/scsn/sc_quakes/tectonic.geojson"
@@ -150,9 +148,12 @@ export function addStationsToMap(map: L.Map, stationList: Array<sp.stationxml.St
   stationList.forEach(sta => {
     const marker = sp.leafletutil.createStationMarker(sta, classList);
     markers.push(marker);
-    marker.addEventListener("click", (evt) => {
-      const ce = sp.stationxml.createStationClickEvent(sta, evt.originalEvent);
-      map.getContainer().dispatchEvent(ce);
+    marker.addEventListener("click", (evt: Event) => {
+      if (sp.stationxml.isStationClickCustomEvent(evt)) {
+        const sce = evt as sp.stationxml.StationClickEvent;
+        const ce = sp.stationxml.createStationClickEvent(sta, sce.detail.mouseevent);
+        map.getContainer().dispatchEvent(ce);
+      }
     });
   });
   const stationLayer = L.layerGroup(markers);
@@ -160,7 +161,7 @@ export function addStationsToMap(map: L.Map, stationList: Array<sp.stationxml.St
   return markers;
 }
 
-export function stateBoundaries(style?: object) {
+export function stateBoundaries(style?: object): Promise<L.GeoJSON> {
   if (!style) {
     style = {
       color: "black",
@@ -205,7 +206,7 @@ export function addGraticuleToMap(map: L.Map, style?: object) {
   }
 }
 
-export function createLegend(map: L.Map, stationSVG?: string, quakeSVG?: string): HTMLDivElement {
+export function createLegend(map: L.Map, stationSVG?: string, quakeSVG?: string): L.Control {
   const div = document.createElement("div");
   div.classList.add("legend");
   if (stationSVG == null) {
@@ -227,8 +228,8 @@ export function createLegend(map: L.Map, stationSVG?: string, quakeSVG?: string)
     </h4>
   `;
   div.innerHTML = out;
-  const legend = L.control({position: 'topright'});
-  legend.onAdd = function(m) {
+  const legend = L.control.zoom({position: 'topright'});
+  legend.onAdd = function() {
     return div;
   };
   legend.addTo(map);

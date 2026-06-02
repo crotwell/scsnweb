@@ -1,7 +1,7 @@
 import './style.css'
 import './leaflet.css'
 
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
 import {DateTime} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
@@ -45,7 +45,6 @@ const minlon = -80.8;
 const maxlon = -80.68;
 retrieveHistoric().then(quakeList => {
 
-  console.log(`prefilter earthquakes: ${quakeList.length}`)
   return quakeList.filter(q => {
     const origin = q.preferredOrigin;
 
@@ -59,13 +58,13 @@ retrieveHistoric().then(quakeList => {
   return swarmQuakes;
 }).then(swarmQuakes => {
   addQuakesToMap(map, swarmQuakes);
-  console.log(`Swarm earthquakes: ${swarmQuakes.length}`);
   const quakeTable = createQuakeTable(swarmQuakes);
-  quakeTable.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, (evt) => {
-    if (!sp.quakeml.isQuakeClickCustomEvent(evt)) {
+  quakeTable.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, (evt: CustomEvent) => {
+    if (sp.quakeml.isQuakeClickCustomEvent(evt)) {
+      window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
+    } else {
       throw new Error("not a QuakeClickEvent");
     }
-    window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
   });
   const text = `Earthquakes in the Lugoff-Elgin Swarm, ${swarmStart.toLocaleString(DateTime.DATE_MED)} to present. `;
   const caption = createCsvDownloadCaption(quakeTable, text);

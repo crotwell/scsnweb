@@ -2,7 +2,7 @@ import './style.css';
 import './leaflet.css';
 
 import {createPublicNavigation} from './navbar';
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
 import {DateTime} from 'luxon';
 
 import {retrieveStationXML} from './datastore';
@@ -47,7 +47,7 @@ createLegend(stationMap);
 
 const heli = document.querySelector("sp-helicorder") as sp.helicorder.Helicorder;
 if (!heli) {throw new Error("Can't find sp-helicorder");}
-heli.addEventListener("helimousemove", (hEvent) => {
+heli.addEventListener("helimousemove", (hEvent: Event) => {
   if (hEvent instanceof CustomEvent && hEvent?.detail.time) {
     const mouseTimeSpan = document.querySelector("#mousetime");
     if (mouseTimeSpan) {
@@ -55,7 +55,7 @@ heli.addEventListener("helimousemove", (hEvent) => {
     }
 }
 });
-heli.addEventListener("mouseleave", (hEvent) => {
+heli.addEventListener("mouseleave", (hEvent: Event) => {
   if (hEvent instanceof CustomEvent && hEvent?.detail.time) {
     const mouseTimeSpan = document.querySelector("#mousetime");
     if (mouseTimeSpan) {
@@ -63,17 +63,19 @@ heli.addEventListener("mouseleave", (hEvent) => {
     }
   }
 });
-heli.addEventListener(sp.helicorder.HELI_CLICK_EVENT, (hEvent) => {
-  const time = hEvent.detail.time;
-  const channel = hEvent.detail.channel;
-  const duration = "PT5M";
-  if (channel != null) {
-    const seismo_href = `${import.meta.env.BASE_URL}seismogram/index.html?net=${channel.networkCode}&sta=${channel.stationCode}&time=${time.toISO()}&dur=${duration}`;
-    window.location.assign(seismo_href);
-  } else {
-    console.log("heli click but no channel")
+heli.addEventListener(sp.helicorder.HELI_CLICK_EVENT, (hEvent: Event) => {
+  if (hEvent instanceof CustomEvent && hEvent?.detail.time) {
+    const time = hEvent.detail.time;
+    const channel = hEvent.detail.channel;
+    const duration = "PT5M";
+    if (channel != null) {
+      const seismo_href = `${import.meta.env.BASE_URL}seismogram/index.html?net=${channel.networkCode}&sta=${channel.stationCode}&time=${time.toISO()}&dur=${duration}`;
+      window.location.assign(seismo_href);
+    } else {
+      console.log("heli click but no channel")
+    }
   }
-})
+});
 
 function displayHeliForStation(station: sp.stationxml.Station) {
   sp.cssutil.insertCSS(`.${sp.leafletutil.StationMarkerClassName}.${sp.leafletutil.cssClassForStationCodes(station)} {
@@ -117,7 +119,7 @@ function displayHeliForStation(station: sp.stationxml.Station) {
         heli.heliConfig.fixedTimeScale,
       )
     ];
-  minMaxQ.loadSeismograms(minMaxSddList).then(sddList => {
+  minMaxQ.loadSeismograms(minMaxSddList).then((sddList: Array<sp.seismogram.SeismogramDisplayData>) => {
     let nowMarker: sp.seismographmarker.MarkerType = {
           markertype: "predicted",
           name: "now",

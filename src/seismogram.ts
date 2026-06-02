@@ -1,14 +1,14 @@
 
 import './style.css'
 
-import * as sp from 'seisplotjs';
+import {default as sp} from 'seisplotjs';
 import {DateTime, Duration} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
 import {retrieveStationXML, quakeById} from './datastore';
 import {CENTER_SC_LAT, CENTER_SC_LON} from './maplayers';
 
-import {init} from './util';
+import {init, EasternTimeZone} from './util';
 import {WORLD_OCEAN, WORLD_OCEAN_ATTR} from './maplayers';
 init();
 
@@ -84,7 +84,7 @@ function displayForQuake(eventid: string) {
         quakeInfo.textContent =
         `for ${quake.time.toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)} (${latlonF.format(quake.latitude)}, ${latlonF.format(quake.longitude)}) Mag: ${quake.magnitude.mag} Depth: ${depthF.format(quake.depth/1000)}`;
       }
-      const filteredStaxml: Array<sp.stationxml.Network> = channelsH_Z(staxml);
+      const filteredStaxml: Array<sp.stationxml.Network> = staxml;//channelsH_Z(staxml);
       const loader = new sp.seismogramloader.SeismogramLoader(filteredStaxml, [quake]);
       if (sp.distaz.distaz(quake.latitude, quake.longitude, 34, -81).distanceDeg>2) {
         // not a SC event, better time params
@@ -97,11 +97,23 @@ function displayForQuake(eventid: string) {
       if (sp.distaz.distaz(quake.latitude, quake.longitude, 34, -81).distanceDeg>2) {
         // not a SC event, better time params
       } else {
-        dataset.waveforms.forEach( sdd => {sdd.alignmentTime = quake.time;});
+        dataset.waveforms.forEach( (sdd: sp.seismogram.SeismogramDisplayData) => {sdd.alignmentTime = quake.time;});
       }
        const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
        orgdisp.setAttribute(sp.leafletutil.FIT_BOUNDS, "true");
        orgdisp.seisData = dataset.waveforms;
+       orgdisp.getTools().updateOrientationCheckboxes(orgdisp);
+       const orientCbList = orgdisp.getTools()?.allOrientationCheckboxes();
+       orientCbList.forEach((cb: HTMLInputElement) => {
+         if (cb.id !== "orient_Z") {
+           console.log(`not orient Z, uncheck it`)
+           cb.checked = false;
+         } else {
+           console.log(`must be orient Z, check it`)
+           cb.checked = true;
+         }
+       });
+       orgdisp.redraw();
      }).catch( err => {
        sp.util.warn(err);
        throw err;
@@ -138,14 +150,14 @@ function displayForTime(netCode: string, staCode: string, time: DateTime, durati
   });
 }
 
-function channelsH_Z(staxml: Array<sp.stationxml.Network>) {
+export function channelsH_Z(staxml: Array<sp.stationxml.Network>) {
   const filteredStaxml: Array<sp.stationxml.Network> = [];
   staxml.forEach( net => {
     filteredStaxml.push(net);
-    net.stations.forEach(sta => {
-      sta.channels = sta.channels.filter(c => c.channelCode[0]==='H' && c.channelCode[2]==='Z');
+    net.stations.forEach((sta: sp.stationxml.Station) => {
+      sta.channels = sta.channels.filter((c: sp.stationxml.Channel) => c.channelCode[0]==='H' && c.channelCode[2]==='Z');
       if (sta.channels.length>1) {
-        sta.channels = sta.channels.filter(c => c.channelCode[1]==='H');
+        sta.channels = sta.channels.filter((c: sp.stationxml.Channel) => c.channelCode[1]==='H');
       }
     });
   });
