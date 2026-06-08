@@ -75,6 +75,14 @@ export function createMapAndTable(divSelector: string = "map",
     seismoLink.textContent = "View";
     return seismoLink;
   });
+  quakeTable.columnLabels.set("dyfi", "Did you feel it?");
+  quakeTable.columnValues.set("dyfi", (q: sp.quakeml.Quake) => {
+    const seismoLink = document.createElement("a");
+    seismoLink.href = `https://earthquake.usgs.gov/earthquakes/eventpage/${q.eventId}/tellus`;
+    seismoLink.textContent = "Report Shaking";
+    return seismoLink;
+  });
+
   tableDiv.appendChild(quakeTable);
   const sleepPromise = new Promise(resolve => setTimeout(resolve, 500));
   const drawQuakePromise = sleepPromise

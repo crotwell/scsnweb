@@ -24,6 +24,13 @@ app.innerHTML = `
   earthquakes during non-business times, it may be a few hours before it
   shows up in the list.
 </p>
+<h3>Where should I report feeling an earthquake?</h3>
+<p>
+  The USGS has a web page for reporting if you felt an earthquake, called
+  <a href="https://earthquake.usgs.gov/data/dyfi/">Did you feel it.</a>
+  There you can report how strongly the shaking was and see where else an
+  earthquake was felt.
+</p>
 <h3>Where have earthquakes happened in South Carolina in the past?</h3>
 <p>
   The patterns of <a href="${import.meta.env.BASE_URL}historical">historical seismicity</a>
