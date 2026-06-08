@@ -1,6 +1,6 @@
 
 
-import {default as sp} from 'seisplotjs';
+import * as sp from 'seisplotjs';
 import {checkForNullMagnitude} from './datastore';
 import {
   basicSCMap,

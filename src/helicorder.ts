@@ -2,7 +2,7 @@ import './style.css';
 import './leaflet.css';
 
 import {createPublicNavigation} from './navbar';
-import {default as sp} from 'seisplotjs';
+import * as sp from 'seisplotjs';
 import {DateTime} from 'luxon';
 
 import {retrieveStationXML} from './datastore';

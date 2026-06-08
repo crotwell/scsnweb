@@ -1,7 +1,7 @@
 import './style.css'
 import './leaflet.css'
 
-import {default as sp} from 'seisplotjs';
+import {usgsgeojson, util as sp_util} from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMapAndTable, createCsvDownloadCaption} from './map_table';
@@ -45,7 +45,7 @@ closeDialogButton.addEventListener("click", () => {
 
 const timeRange = Interval.before(DateTime.utc(), recentQuakeTimeDuration);
 
-const quakeQuery = sp.usgsgeojson.loadMonthSummarySignificant();
+const quakeQuery = usgsgeojson.loadMonthSummarySignificant();
 const chanQuery = retrieveStationXML();
 
 createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery, 1)
@@ -61,6 +61,6 @@ createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery, 1)
   return Promise.all([quakeMap, quakeTable, stateBound]);
 
 }).catch( err => {
-  sp.util.warn(err);
+  sp_util.warn(err);
   throw err;
 });

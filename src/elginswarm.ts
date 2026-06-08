@@ -1,8 +1,8 @@
 import './style.css'
 import './leaflet.css'
 
-import {default as sp} from 'seisplotjs';
-import {DateTime} from 'luxon';
+import { quakeml, util as sp_util} from 'seisplotjs';
+import {DateTime, IANAZone} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
 import {
@@ -14,7 +14,7 @@ import {createQuakeTable, createCsvDownloadCaption} from './map_table';
 import {init} from './util';
 init();
 
-export const EASTERN_TIMEZONE = new sp.luxon.IANAZone("America/New_York");
+export const EASTERN_TIMEZONE = new IANAZone("America/New_York");
 
 createPublicNavigation();
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -59,8 +59,8 @@ retrieveHistoric().then(quakeList => {
 }).then(swarmQuakes => {
   addQuakesToMap(map, swarmQuakes);
   const quakeTable = createQuakeTable(swarmQuakes);
-  quakeTable.addEventListener(sp.quakeml.QUAKE_CLICK_EVENT, (evt: CustomEvent) => {
-    if (sp.quakeml.isQuakeClickCustomEvent(evt)) {
+  quakeTable.addEventListener(quakeml.QUAKE_CLICK_EVENT, (evt: CustomEvent) => {
+    if (quakeml.isQuakeClickCustomEvent(evt)) {
       window.location.assign(`${import.meta.env.BASE_URL}seismogram/index.html?eventid=${evt.detail.quake.eventId}`);
     } else {
       throw new Error("not a QuakeClickEvent");
@@ -74,6 +74,6 @@ retrieveHistoric().then(quakeList => {
   quakeTable.draw();
 
 }).catch( err => {
-  sp.util.warn(err);
+  sp_util.warn(err);
   throw err;
 });

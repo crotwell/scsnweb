@@ -1,4 +1,4 @@
-import {default as sp} from 'seisplotjs';
+import * as sp from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 import * as L from 'leaflet';
 import "leaflet-polar-graticule";
@@ -31,7 +31,7 @@ export function historicEarthquakes(timeRange?: Interval|null, style?: object ):
   }
   return sp.usgsgeojson.loadRawUSGSGeoJsonSummary(HISTORIC_URL)
     .then((hisGeoJson: sp.usgsgeojson.USGSGeoJsonSummary) => {
-      hisGeoJson.features = hisGeoJson.features.filter((q: sp.quakeml.Quake) => {
+      hisGeoJson.features = hisGeoJson.features.filter((q: sp.usgsgeojson.USGSGeoJsonFeature) => {
         const qTime = DateTime.fromMillis(q.properties.time);
         return qTime < timeRange.start;
       });
@@ -135,8 +135,8 @@ export function basicSCMap(div: HTMLDivElement,
   return map;
 }
 
-export function addQuakesToMap(map: L.Map, quakeList: Array<sp.quakeml.Quake>): Array<L.CircleMarker> {
-  const markers: Array<L.CircleMarker> = [];
+export function addQuakesToMap(map: L.Map, quakeList: Array<sp.quakeml.Quake>): Array<L.Marker> {
+  const markers: Array<L.Marker> = [];
   quakeList.forEach(q => {markers.push(sp.leafletutil.createQuakeMarker(q))});
   const quakeLayer = L.layerGroup(markers);
   map.addLayer(quakeLayer);
@@ -148,12 +148,10 @@ export function addStationsToMap(map: L.Map, stationList: Array<sp.stationxml.St
   stationList.forEach(sta => {
     const marker = sp.leafletutil.createStationMarker(sta, classList);
     markers.push(marker);
-    marker.addEventListener("click", (evt: Event) => {
-      if (sp.stationxml.isStationClickCustomEvent(evt)) {
-        const sce = evt as sp.stationxml.StationClickEvent;
-        const ce = sp.stationxml.createStationClickEvent(sta, sce.detail.mouseevent);
-        map.getContainer().dispatchEvent(ce);
-      }
+    marker.addEventListener("click", (evt: L.LeafletEvent) => {
+      const me = evt as L.LeafletMouseEvent;
+      const ce = sp.stationxml.createStationClickEvent(sta, me.originalEvent);
+      map.getContainer().dispatchEvent(ce);
     });
   });
   const stationLayer = L.layerGroup(markers);

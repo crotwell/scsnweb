@@ -1,7 +1,7 @@
 
 import './style.css'
 
-import {default as sp} from 'seisplotjs';
+import * as sp from 'seisplotjs';
 import {DateTime, Duration} from 'luxon';
 
 import {createPublicNavigation} from './navbar';
@@ -102,9 +102,9 @@ function displayForQuake(eventid: string) {
        const orgdisp = document.querySelector(sp.organizeddisplay.ORG_DISPLAY) as sp.organizeddisplay.OrganizedDisplay;
        orgdisp.setAttribute(sp.leafletutil.FIT_BOUNDS, "true");
        orgdisp.seisData = dataset.waveforms;
-       orgdisp.getTools().updateOrientationCheckboxes(orgdisp);
+       orgdisp.getTools()?.updateOrientationCheckboxes(orgdisp);
        const orientCbList = orgdisp.getTools()?.allOrientationCheckboxes();
-       orientCbList.forEach((cb: HTMLInputElement) => {
+       orientCbList?.forEach((cb: HTMLInputElement) => {
          if (cb.id !== "orient_Z") {
            console.log(`not orient Z, uncheck it`)
            cb.checked = false;

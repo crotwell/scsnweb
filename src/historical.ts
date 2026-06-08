@@ -1,7 +1,7 @@
 import './style.css'
 import './leaflet.css'
 
-import {default as sp} from 'seisplotjs';
+import {quakeml, util as sp_util} from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 import {retrieveQuakeML} from './datastore';
 import {createPublicNavigation} from './navbar';
@@ -52,7 +52,7 @@ historicEarthquakes(timeRange, hist_style)
 .then(historicalLayer => historicalLayer.addTo(quakeMap))
 .then(() => {
   return retrieveQuakeML().then(qml => {
-    const monthQuakes = qml.eventList.filter((q: sp.quakeml.Quake) => timeRange.contains(q.time));
+    const monthQuakes = qml.eventList.filter((q: quakeml.Quake) => timeRange.contains(q.time));
     addQuakesToMap(quakeMap, monthQuakes);
     return qml;
   })
@@ -63,6 +63,6 @@ historicEarthquakes(timeRange, hist_style)
   });
 
 }).catch( err => {
-  sp.util.warn(err);
+  sp_util.warn(err);
   throw err;
 });

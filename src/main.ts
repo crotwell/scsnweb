@@ -1,7 +1,7 @@
 import './style.css'
 import './leaflet.css'
 
-import {default as sp} from 'seisplotjs';
+import {util as sp_util} from 'seisplotjs';
 import {DateTime, Duration, Interval} from 'luxon';
 
 import {createMainNavigation} from './navbar';
@@ -67,6 +67,6 @@ createMapAndTable("#maptable", timeRange, quakeQuery, chanQuery)
 }).then(() => {
   console.log("main done map,table")
 }).catch( err => {
-  sp.util.warn(err);
+  sp_util.warn(err);
   throw err;
 });

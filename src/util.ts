@@ -1,6 +1,6 @@
 import {Settings, IANAZone} from 'luxon';
 
-import {default as sp} from 'seisplotjs';
+import * as sp from 'seisplotjs';
 
 export function insertFlavicon() {
   const flaviconLinks = `
