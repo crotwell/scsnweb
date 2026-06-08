@@ -45,7 +45,9 @@ app.innerHTML = `
         Savannah River Nuclear Solutions</a>.
     </p>
     <h3>Media Inquiries:</h3>
-    <p>Requests for media inquires may be directed to the director, Dr. Dan Frost,
+    <p>Requests for media inquires may be directed to the director,
+      <a href="https://www.sc.edu/study/colleges_schools/artsandsciences/earth_ocean_and_environment/our_people/directory/frost_dan.php">
+        Dr. Dan Frost</a>,
       at <a href="mailto:dfrost@seoe.sc.edu">dfrost@seoe.sc.edu</a>.
     </p>
 
@@ -95,16 +97,15 @@ app.innerHTML = `
       </li>
     </ul>
 
-    <pre>
-    School of Earth, Ocean and Environment
-    University of South Carolina
-    701 Sumter St.
-    Columbia SC 20208
-    </pre>
-    <a href="mailto:scsn@seis.sc.edu"> scsn@seis.sc.edu </a>
-    <pre>
-    (803)777-4535
-    </pre>
+    <h3>Contact:</h3>
+    <address>
+    School of Earth, Ocean and Environment<br />
+    University of South Carolina<br />
+    701 Sumter St.<br />
+    Columbia SC 20208<br />
+    <a href="mailto:scsn@seis.sc.edu"> scsn@seis.sc.edu </a><br />
+    <a href="tel:+1 (803)777-4535">(803)777-4535</a><br />
+    </address>
 
 `
 }
