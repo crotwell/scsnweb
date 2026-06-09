@@ -80,6 +80,12 @@ const sc_minlon = -83.5;
 const sc_maxlon = -78.4;
 
 export function quakeById(eventId: string): Promise<quakeml.Quake|null> {
+  if (knownQuakes.has(eventId)) {
+    const q = knownQuakesget(eventId);
+    if (q == null) {
+      knownQuakes.delete(eventId);
+    }
+  }
   const quakeUrl = `https://eeyore.seis.sc.edu/scsn/sc_quakes/by_eventid/eventid_${eventId}`;
   return quakeml.fetchQuakeML(quakeUrl)
   .catch((_err: any) => {
@@ -90,6 +96,7 @@ export function quakeById(eventId: string): Promise<quakeml.Quake|null> {
     if (qml.eventList.length !== 0) {
       const q = qml.eventList[0];
       checkForNullMagnitude([q]);
+      knownQuakes.set(eventId, q);
       return q;
     } else {
       return null;
@@ -104,7 +111,7 @@ export function retrieveSCQuakesWeek(): Promise<Array<quakeml.Quake>> {
       return sc_minlat <= q.latitude && q.latitude <= sc_maxlat
         && sc_minlon <= q.longitude && q.longitude <= sc_maxlon;
     });
-  }).then(checkForNullMagnitude);
+  }).then(checkForNullMagnitude).then(addToKnownQuakes);
 }
 
 export function retrieveQuakeML(): Promise<quakeml.EventParameters> {
@@ -134,6 +141,7 @@ export function retrieveGlobalSignificant(timeRange?: Interval): Promise<quakeml
       return usgsgeojson.parseGeoJSON(geojson);
     }).then((ep: quakeml.EventParameters) => {
       checkForNullMagnitude(ep.eventList);
+      addToKnownQuakes(ep.eventList);
       return ep;
     });
   } else {
@@ -156,3 +164,15 @@ export function checkForNullMagnitude(quakeList: Array<quakeml.Quake>) {
   });
   return quakeList;
 }
+
+export function addToKnownQuakes(quakeList: Array<quakeml.Quake>) {
+  while (knownQuakes.size > 150) {
+    knownQuakes.delete(knownQuakes.keys().iterator.next().value)
+  }
+  quakeList.forEach(q => {
+    knownQuakes.set(q.eventId, q);
+  });
+  return quakeList;
+}
+
+export const knownQuakes = new Map<string, quakeml.Quake>();
